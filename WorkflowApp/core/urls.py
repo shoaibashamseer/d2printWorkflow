@@ -18,6 +18,7 @@ from core.views.manager.raw_material_variant_views import RawMaterialVariantView
 from core.views.manager.raw_material_views import RawMaterialViewSet
 from core.views.manager.stock_alert_views import LowStockAlertView
 from core.views.boss_reports import MonthlyReportView
+from core.views.worker_workorder_view import WorkerWorkOrderViewSet
 from core.views.boss_views import (
     DailyLedgerViewSet,
     WorkEstimateViewSet,
@@ -41,6 +42,12 @@ router.register("manager/raw-material-variants", RawMaterialVariantViewSet)
 router.register("boss/daily-ledger", DailyLedgerViewSet, basename="daily-ledger")
 router.register("boss/work-estimates", WorkEstimateViewSet, basename="work-estimates")
 router.register("boss/work-results", WorkResultViewSet, basename="work-results")
+
+router.register(
+    "worker/workorders",
+    WorkerWorkOrderViewSet,
+    basename="worker-workorders",
+)
 
 urlpatterns = [
     path("auth/login/", login_view),

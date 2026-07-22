@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../api/api";
 import "../styles/manager.css";
+import SmartSearchInput from "../components/SmartSearchInput";
 
 export default function PlaceOrder() {
   const [products, setProducts] = useState([]);
@@ -151,40 +152,38 @@ export default function PlaceOrder() {
       <div className="form-card">
         <h3>Customer</h3>
 
-        <select
-          className="form-input"
+        <SmartSearchInput
+          items={customers}
           value={customerId}
-          onChange={e => setCustomerId(e.target.value)}
-        >
-          <option value="">Select Existing Customer</option>
-          {customers.map(c => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
-          ))}
-        </select>
+          placeholder="Search or create customer"
 
-        {/* ⭐ CUSTOMER TYPE BADGE */}
+        onSelect={(customer) => {
+          setCustomerId(customer.id);
+          setNewCustomerName("");
+          setNewCustomerPhone("");
+        }}
+
+        onCreate={(name) => {
+          setCustomerId("");
+          setNewCustomerName(name);
+        }}
+        />
+        {!customerId && newCustomerName && (
+
+          <input
+              className="form-input"
+              placeholder="Customer Phone Number"
+              value={newCustomerPhone}
+              onChange={e=>setNewCustomerPhone(e.target.value)}
+          />
+
+        )}
         {getSelectedCustomer() && (
           <div className="price-box">
-            Customer Type: {getSelectedCustomer().customer_type.toUpperCase()}
+              Customer Type:
+              {getSelectedCustomer().customer_type.toUpperCase()}
           </div>
         )}
-
-        <input
-          className="form-input"
-          placeholder="Or Add New Customer"
-          value={newCustomerName}
-          onChange={e => setNewCustomerName(e.target.value)}
-        />
-
-        <input
-          className="form-input"
-          placeholder="Customer Phone Number"
-          value={newCustomerPhone}
-          onChange={e => setNewCustomerPhone(e.target.value)}
-        />
-
         <h3>Delivery Info</h3>
 
         <input
@@ -228,16 +227,64 @@ export default function PlaceOrder() {
           <div key={index} className="form-card">
             <h3>Item {index + 1}</h3>
 
-            <select
-              className="form-input"
-              value={item.productId}
-              onChange={e => updateItem(index, "productId", e.target.value)}
-            >
-              <option value="">Select Product</option>
-              {products.map(p => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
+            <SmartSearchInput
+
+                items={products}
+
+                value={item.productId}
+
+                placeholder="Search or create product"
+
+                onSelect={(product)=>{
+
+                    const updated=[...items];
+
+                    updated[index].productId=product.id;
+
+                    if(product.default_workflow){
+
+                        updated[index].workflowId=
+                            product.default_workflow;
+
+                    }
+                    if (product.default_materials?.length) {
+                      updated[index].materials = product.default_materials.map(m => ({
+                          variantId: m.variant,
+                          quantity: m.default_quantity,
+                      }));
+                  }
+                    setItems(updated);
+
+                }}
+                onCreate={async(name)=>{
+
+                    const res=await api.post(
+                        "manager/products/",
+                        {
+                            name
+                        }
+                    );
+
+                    setProducts([
+                        ...products,
+                        res.data
+                    ]);
+                    
+                   const updated=[...items];
+
+                      updated[index].productId=res.data.id;
+
+                      if(res.data.default_workflow){
+
+                          updated[index].workflowId=
+                              res.data.default_workflow;
+
+                      }
+
+                      setItems(updated);
+                    }}
+
+            />
 
             {/* ⭐ AUTO PRICE DISPLAY */}
             {product && (
@@ -274,28 +321,67 @@ export default function PlaceOrder() {
 
             <h4>Materials</h4>
 
-            <select
-              className="form-input"
-              onChange={e => addMaterial(index, e.target.value)}
-            >
-              <option value="">Select Material Variant</option>
-              {materialVariants.map(m => (
-                <option key={m.id} value={m.id}>
-                  {m.material_name} - {m.name} (Stock: {m.stock})
-                </option>
-              ))}
-            </select>
+            <SmartSearchInput
+                items={materialVariants}
+                value=""
+                displayField="name"
+                placeholder="Search Material"
+
+                onSelect={(variant) => {
+
+                    addMaterial(index, variant.id);
+
+                }}
+
+                onCreate={async(name)=>{
+
+                    try{
+
+                        const res = await api.post(
+                            "manager/raw-material-variants/",
+                            {
+                                name
+                            }
+                        );
+
+                        setMaterialVariants(prev=>[
+                            ...prev,
+                            res.data
+                        ]);
+
+                        addMaterial(index,res.data.id);
+
+                    }
+                    catch(err){
+
+                        alert("Unable to create material.");
+
+                        console.log(err.response?.data);
+
+                    }
+
+                }}
+            />
 
             {item.materials.map((mat, mIndex) => {
               const variant = materialVariants.find(v => v.id == mat.variantId);
 
               return (
                 <div key={mIndex} style={{ marginTop: "6px" }}>
-                  {variant?.material_name} - {variant?.name}
+                  
+                  <div style={{fontWeight:600}}>
+                      {variant?.material_name}
+                  </div>
+
+                  <div style={{fontSize:13,color:"#666"}}>
+                      {variant?.name}
+                  </div>
 
                   <input
                     className="form-input"
                     type="number"
+                    min="1"
+                    step="1"
                     value={mat.quantity}
                     onChange={(e) => {
                       const updated = [...items];
@@ -303,20 +389,42 @@ export default function PlaceOrder() {
                       setItems(updated);
                     }}
                   />
+                  <button
+                      type="button"
+                      className="action-btn"
+                      style={{
+                          background:"#dc2626",
+                          marginTop:5
+                      }}
+                      onClick={()=>{
+                          const updated=[...items];
+
+                          updated[index].materials=
+                              updated[index].materials.filter(
+                                  (_,i)=>i!==mIndex
+                              );
+
+                          setItems(updated);
+                      }}
+                  >
+                      Remove
+                  </button>
                 </div>
               );
             })}
           </div>
+          
         );
       })}
-
+      
      {/* GRAND TOTAL CARD */}
-    <div className="form-card" style={{ marginTop: "20px" }}>
-      <h2 style={{ marginBottom: "10px" }}>
-        Grand Total: ₹{calculateGrandTotal()}
-      </h2>
+    <div className="order-summary">
+        <span className="summary-label">Grand Total</span>
+        <span className="summary-value">
+            ₹{calculateGrandTotal().toLocaleString()}
+        </span>
     </div>
-
+    
     <button className="action-btn" onClick={addItem}>
       ➕ Add Item
     </button>

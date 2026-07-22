@@ -55,7 +55,7 @@ class ProductPropertyInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "wholesale_price","retail_price", "is_active")
+    list_display = ("id", "name", "wholesale_price","retail_price","default_workflow" ,"is_active")
     search_fields = ("name",)
     list_filter = ("is_active",)
     inlines = [ProductPropertyInline]
@@ -72,8 +72,7 @@ class WorkflowStepInline(admin.TabularInline):
 
 @admin.register(Workflow)
 class WorkflowAdmin(admin.ModelAdmin):
-    list_display = ("id", "name", "product")
-    list_filter = ("product",)
+    list_display = ("id", "name")
     search_fields = ("name",)
     inlines = [WorkflowStepInline]
 

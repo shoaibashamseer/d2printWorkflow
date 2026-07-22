@@ -17,4 +17,4 @@ class WorkflowSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Workflow
-        fields = ["id", "product", "name", "description", "steps"]
+        fields = ["id", "name", "description", "steps"]

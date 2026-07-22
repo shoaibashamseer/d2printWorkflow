@@ -2,7 +2,20 @@ from django.db import models
 from django.conf import settings
 
 class Role(models.Model):
+
+    USER_TYPES = (
+        ("worker", "Worker"),
+        ("manager", "Manager"),
+        ("boss", "Boss"),
+    )
+
     name = models.CharField(max_length=100)
+
+    user_type = models.CharField(
+        max_length=20,
+        choices=USER_TYPES,
+        default="worker",
+    )
 
     def __str__(self):
         return self.name
@@ -52,11 +65,25 @@ class Customer(models.Model):
     def __str__(self):
         return self.name
 
+class Workflow(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.name
+
 class Product(models.Model):
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True)
     wholesale_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     retail_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    default_workflow = models.ForeignKey(
+        Workflow,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="products"
+    )
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -77,13 +104,6 @@ class ProductProperty(models.Model):
     def __str__(self):
         return f"{self.product.name} - {self.name}"
 
-class Workflow(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    name = models.CharField(max_length=150)
-    description = models.TextField(blank=True)
-
-    def __str__(self):
-        return self.name
 
 class WorkflowStep(models.Model):
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
@@ -240,3 +260,17 @@ class WorkResult(models.Model):
     amount_received = models.FloatField(default=0)
 
     created_by = models.ForeignKey("auth.User", on_delete=models.CASCADE)
+
+class ProductMaterial(models.Model):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="default_materials"
+    )
+
+    material_variant = models.ForeignKey(
+        RawMaterialVariant,
+        on_delete=models.CASCADE
+    )
+
+    default_quantity = models.FloatField(default=1)
