@@ -1,0 +1,15 @@
+# Local secrets and database files
+.env
+**/.env
+WorkflowApp/db.local.sqlite3
+WorkflowApp/db.sqlite3
+
+# Python runtime artifacts and environments
+__pycache__/
+*.py[cod]
+venv/
+work/
+
+# Frontend generated dependencies/build output
+frontend/node_modules/
+frontend/build/

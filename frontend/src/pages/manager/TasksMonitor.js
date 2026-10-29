@@ -1,171 +1,256 @@
-import { useEffect, useState } from "react";
+import ManagerSidebar from "../../components/ManagerSidebar";
+import { useCallback, useEffect, useState } from "react";
 import api from "../../api/api";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import "../../styles/manager.css";
+import formatDisplayValue from "../worker/formatDisplayValue";
+import "../../styles/managerDashboard.css";
+import "../../styles/managerTasks.css";
+
+const columns = [
+  { title: "Ready", status: "ready", icon: "◉" },
+  { title: "In Progress", status: "in_progress", icon: "◷" },
+  { title: "Completed", status: "completed", icon: "✓" },
+];
+
+const statusLabels = {
+  ready: "Ready",
+  in_progress: "In Progress",
+  completed: "Completed",
+};
+
+const getRoleClass = (role) => {
+  if (!role) return "role-default";
+  const normalizedRole = role.toLowerCase();
+  if (normalizedRole.includes("design")) return "role-design";
+  if (normalizedRole.includes("print")) return "role-print";
+  if (normalizedRole.includes("sublimation")) return "role-sublimation";
+  if (normalizedRole.includes("helper")) return "role-helper";
+  if (normalizedRole.includes("bill")) return "role-billing";
+  return "role-default";
+};
+
+const getDeadlineInfo = (dateStr) => {
+  if (!dateStr) return null;
+
+  const today = new Date();
+  const delivery = new Date(dateStr);
+  const diffDays = Math.ceil((delivery - today) / (1000 * 60 * 60 * 24));
+
+  if (diffDays <= 0) return { label: "Today", class: "manager-task-deadline--today" };
+  if (diffDays === 1) return { label: "Tomorrow", class: "manager-task-deadline--soon" };
+  if (diffDays <= 3) return { label: `${diffDays} days`, class: "manager-task-deadline--warn" };
+  return { label: `${diffDays} days`, class: "manager-task-deadline--normal" };
+};
+
+const getOrderLabel = (task) => {
+  const orderId = task.order_id ?? task.order;
+  return orderId === null || orderId === undefined || orderId === ""
+    ? "Order ID unavailable"
+    : `Order #${orderId}`;
+};
+
+const asTasks = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.results)) return data.results;
+  return [];
+};
 
 function TasksMonitor() {
   const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const role = formatDisplayValue(localStorage.getItem("role"), "Manager");
 
-  const loadTasks = () => {
-    api.get("manager/tasks/").then(res => setTasks(res.data));
-  };
+  const loadTasks = useCallback(() => api.get("manager/tasks/")
+    .then((response) => {
+      setTasks(asTasks(response.data));
+      setLoadError("");
+    })
+    .catch((error) => {
+      setLoadError(error.response?.data?.detail || "Tasks could not be loaded.");
+    })
+    .finally(() => setLoading(false)), []);
 
   useEffect(() => {
     loadTasks();
     const interval = setInterval(loadTasks, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [loadTasks]);
 
-  const getTasks = (status) => tasks.filter(t => t.status === status);
+  const getTasks = (status) => tasks.filter((task) => task.status === status);
 
-  // 🔥 DRAG HANDLER
   const onDragEnd = async (result) => {
     if (!result.destination) return;
 
     const taskId = result.draggableId;
     const source = result.source.droppableId;
-    const dest = result.destination.droppableId;
-
-    if (source === dest) return;
+    const destination = result.destination.droppableId;
+    if (source === destination) return;
 
     try {
-      if (dest === "in_progress") {
+      if (destination === "in_progress") {
         await api.post(`tasks/${taskId}/start/`);
       }
 
-      if (dest === "completed") {
+      if (destination === "completed") {
         await api.post(`tasks/${taskId}/complete/`);
       }
 
       loadTasks();
-    } catch (err) {
-      console.log("Drag action error:", err);
+    } catch (error) {
+      console.log("Drag action error:", error);
     }
   };
 
-  const Column = ({ title, status }) => {
-  const list = getTasks(status);
+  const logout = () => {
+    localStorage.clear();
+    window.location.href = "/";
+  };
+
+  const currentDate = new Intl.DateTimeFormat(undefined, {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(new Date());
 
   return (
-            <Droppable droppableId={status}>
-              {(provided) => (
-                <div
-                  className="kanban-column"
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                >
-                  <h3>
-                    {title} <span className="column-count">({list.length})</span>
-                  </h3>
+    <div className="manager-dashboard manager-tasks-page">
+      <ManagerSidebar role={role} onLogout={logout} />
 
+      <main className="manager-dashboard__main manager-tasks-page__main">
+        <header className="manager-dashboard__topbar">
+          <div className="manager-dashboard__breadcrumb">
+            <p className="manager-dashboard__eyebrow">MANAGER AREA</p>
+            <span className="manager-dashboard__breadcrumb-separator" aria-hidden="true">›</span>
+            <p className="manager-dashboard__crumb">Tasks</p>
+          </div>
+          <span className="manager-dashboard__date">{currentDate}</span>
+        </header>
 
-                  {list.map((task, index) => (
-                    <Draggable
-                      key={task.id}
-                      draggableId={String(task.id)}
-                      index={index}
+        <div className="manager-dashboard__content manager-tasks-page__content">
+          <section className="manager-dashboard__page-heading manager-tasks-page__heading">
+            <div>
+              <h1>Tasks</h1>
+              <p>Monitor production tasks by their current workflow status.</p>
+            </div>
+          </section>
+
+          {loadError && (
+            <div className="manager-tasks-page__error" role="alert">{loadError}</div>
+          )}
+
+          <DragDropContext onDragEnd={onDragEnd}>
+            <div className="manager-tasks-board">
+              {columns.map((column) => (
+                <TaskColumn
+                  key={column.status}
+                  title={column.title}
+                  status={column.status}
+                  icon={column.icon}
+                  tasks={getTasks(column.status)}
+                  loading={loading}
+                />
+              ))}
+            </div>
+          </DragDropContext>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+function TaskColumn({ title, status, icon, tasks, loading }) {
+  return (
+    <Droppable droppableId={status}>
+      {(provided, snapshot) => (
+        <section
+          className={`manager-task-lane manager-task-lane--${status}${snapshot.isDraggingOver ? " is-dragging-over" : ""}`}
+          ref={provided.innerRef}
+          {...provided.droppableProps}
+          aria-label={`${title} tasks`}
+        >
+          <header className="manager-task-lane__heading">
+            <div>
+              <span className={`manager-task-lane__icon manager-task-lane__icon--${status}`} aria-hidden="true">{icon}</span>
+              <h2>{title}</h2>
+            </div>
+            <span className="manager-task-lane__count">{tasks.length}</span>
+          </header>
+
+          <div className="manager-task-lane__cards">
+            {!loading && tasks.length === 0 && (
+              <p className="manager-task-lane__empty">No {title.toLowerCase()} tasks.</p>
+            )}
+
+            {tasks.map((task, index) => {
+              const deadline = getDeadlineInfo(task.order_delivery_date || task.delivery_date);
+              return (
+                <Draggable key={task.id} draggableId={String(task.id)} index={index}>
+                  {(draggableProvided, draggableSnapshot) => (
+                    <article
+                      ref={draggableProvided.innerRef}
+                      {...draggableProvided.draggableProps}
+                      {...draggableProvided.dragHandleProps}
+                      className={`manager-task-card ${getRoleClass(task.workflow_role_name)}${draggableSnapshot.isDragging ? " is-dragging" : ""}`}
+                      style={{
+                        ...draggableProvided.draggableProps.style,
+                        transition: "box-shadow 120ms ease, border-color 120ms ease",
+                      }}
                     >
-                      {(provided) => (
-                       <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          className={`kanban-card ${getRoleClass(task.workflow_role_name)}`}
-                          style={{
-                            ...provided.draggableProps.style,
-                            transition: "all 0.18s ease",
-                          }}
-                        >
+                      <div className="manager-task-card__topline">
+                        <strong className="manager-task-card__step">
+                          {formatDisplayValue(task.workflow_step_name, "Workflow task")}
+                        </strong>
+                        <span className={`manager-task-card__status manager-task-card__status--${status}`}>
+                          {statusLabels[status]}
+                        </span>
+                      </div>
 
-                          <div className="kanban-title">
-                            {task.workflow_step_name}
-                          </div>
+                      <div className="manager-task-card__order">
+                        <span>{getOrderLabel(task)}</span>
+                        {task.order_item_id !== null && task.order_item_id !== undefined && (
+                          <span>Item #{task.order_item_id}</span>
+                        )}
+                      </div>
 
-                          <div className="kanban-sub">
-                            Order #{task.order}
-                          </div>
-                            {getDeadlineInfo(task.delivery_date || task.order_delivery_date) && (
-                              <div
-                                className={`deadline-badge ${
-                                  getDeadlineInfo(task.delivery_date || task.order_delivery_date).class
-                                }`}
-                              >
-                                ⏱ {getDeadlineInfo(task.delivery_date || task.order_delivery_date).label}
-                              </div>
-                            )}
+                      <div className="manager-task-card__product">
+                        {task.product_name
+                          ? `${task.quantity ? `${task.quantity} × ` : ""}${formatDisplayValue(task.product_name)}`
+                          : "Product details unavailable"}
+                      </div>
 
-                          <div className="kanban-role">
-                            Role: {task.workflow_role_name}
-                          </div>
-
-                         {task.assigned_to_name && (
-                             <div className="kanban-user">
-                               <div className="avatar-circle">
-                                 {task.assigned_to_name.charAt(0).toUpperCase()}
-                               </div>
-                               <span>{task.assigned_to_name}</span>
-                             </div>
-                          )}
-
+                      {task.customer_name && (
+                        <div className="manager-task-card__customer">
+                          {formatDisplayValue(task.customer_name)}
+                          {task.customer_company && ` · ${formatDisplayValue(task.customer_company)}`}
                         </div>
                       )}
-                    </Draggable>
-                  ))}
 
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-    );
-};
-    // 🎨 Role → Color mapping
-    const getRoleClass = (role) => {
-      if (!role) return "";
+                      <div className="manager-task-card__details">
+                        <span><small>Role</small>{formatDisplayValue(task.workflow_role_name, "Role not set")}</span>
+                        <span><small>Worker</small>{task.assigned_to_name ? formatDisplayValue(task.assigned_to_name) : "Unassigned"}</span>
+                      </div>
 
-      const r = role.toLowerCase();
+                      <div className="manager-task-card__footer">
+                        {deadline ? (
+                          <span className={`manager-task-deadline ${deadline.class}`}>Due {deadline.label}</span>
+                        ) : (
+                          <span className="manager-task-deadline manager-task-deadline--normal">No due date</span>
+                        )}
+                        <span className="manager-task-card__drag-hint" aria-hidden="true">⠿</span>
+                      </div>
+                    </article>
+                  )}
+                </Draggable>
+              );
+            })}
 
-      if (r.includes("design")) return "role-design";
-      if (r.includes("print")) return "role-print";
-      if (r.includes("sublimation")) return "role-sublimation";
-      if (r.includes("helper")) return "role-helper";
-      if (r.includes("bill")) return "role-billing";
-
-      return "role-default";
-    };
-
-    // ⏱ Deadline badge logic
-    const getDeadlineInfo = (dateStr) => {
-      if (!dateStr) return null;
-
-      const today = new Date();
-      const delivery = new Date(dateStr);
-
-      const diffDays = Math.ceil(
-        (delivery - today) / (1000 * 60 * 60 * 24)
-      );
-
-      if (diffDays <= 0) return { label: "TODAY", class: "deadline-today" };
-      if (diffDays === 1) return { label: "Tomorrow", class: "deadline-soon" };
-      if (diffDays <= 3) return { label: `${diffDays} days`, class: "deadline-warn" };
-
-      return { label: `${diffDays} days`, class: "deadline-normal" };
-    };
-
-
-  return (
-    <div className="manager-page">
-      <div className="manager-header">
-        <h1>Live Task Monitor</h1>
-      </div>
-
-      <DragDropContext onDragEnd={onDragEnd}>
-        <div className="kanban-board">
-          <Column title="🟡 Ready" status="ready" />
-          <Column title="🔵 In Progress" status="in_progress" />
-          <Column title="✅ Completed" status="completed" />
-        </div>
-      </DragDropContext>
-    </div>
+            {provided.placeholder}
+          </div>
+        </section>
+      )}
+    </Droppable>
   );
 }
 

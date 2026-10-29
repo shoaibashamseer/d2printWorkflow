@@ -1,0 +1,119 @@
+.manager-place-order-page { --po-ink: #0f172a; --po-muted: #64748b; --po-border: #e2e8f0; }
+.manager-place-order-page__content { width: min(100%, 1120px); padding-top: 23px; padding-bottom: 40px; }
+.manager-place-order-page__heading { margin-bottom: 17px; }
+.manager-place-order-page__heading p { max-width: 620px; line-height: 1.5; }
+
+.manager-place-order-page__section { margin-bottom: 13px; overflow: visible; border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; box-shadow: 0 2px 7px rgba(15, 23, 42, .03); }
+.manager-place-order-page__section-header { min-height: 67px; display: flex; align-items: center; gap: 11px; padding: 12px 16px; border-bottom: 1px solid #eef2f7; }
+.manager-place-order-page__section-number { width: 29px; height: 29px; display: grid; flex: 0 0 auto; place-items: center; border-radius: 8px; background: #eff6ff; color: #2563eb; font-size: 9px; font-weight: 700; }
+.manager-place-order-page__section-header > div { min-width: 0; }
+.manager-place-order-page__section-header h2 { margin: 0; color: #1e293b; font-size: 12px; font-weight: 700; }
+.manager-place-order-page__section-header p { margin: 4px 0 0; color: #94a3b8; font-size: 9px; }
+.manager-place-order-page__section-header--items { border-bottom: 0; }
+.manager-place-order-page__item-count { margin-left: auto; padding: 5px 8px; border-radius: 20px; background: #f1f5f9; color: #64748b; font-size: 8px; font-weight: 700; }
+.manager-place-order-page__section-body { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 13px; padding: 15px 16px; }
+.manager-place-order-page__field { min-width: 0; display: flex; flex-direction: column; gap: 6px; color: #334155; font-size: 10px; font-weight: 600; }
+.manager-place-order-page__field b { color: #dc2626; }
+.manager-place-order-page__field .form-input,
+.manager-place-order-page__field > input,
+.manager-place-order-page__field > select { width: 100%; min-height: 36px; padding: 8px 10px; border: 1px solid #dbe3ee; border-radius: 6px; outline: none; background: #fff; color: #334155; font: inherit; font-size: 10px; font-weight: 400; }
+.manager-place-order-page__field > .smart-search { width: 100%; }
+.manager-place-order-page__field > .smart-search > .form-input { min-height: 36px; margin: 0; }
+.manager-place-order-page__field .form-input:focus,
+.manager-place-order-page__field > input:focus,
+.manager-place-order-page__field > select:focus { border-color: #93c5fd; box-shadow: 0 0 0 3px rgba(59, 130, 246, .12); }
+.manager-place-order-page__field--wide { grid-column: 1 / -1; }
+.manager-place-order-page__customer-summary { grid-column: 1 / -1; min-height: 56px; display: flex; align-items: center; gap: 10px; padding: 9px 11px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; }
+.manager-place-order-page__customer-mark { width: 31px; height: 31px; display: grid; flex: 0 0 auto; place-items: center; border-radius: 8px; background: #dbeafe; color: #1d4ed8; font-size: 10px; font-weight: 700; }
+.manager-place-order-page__customer-summary > div { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.manager-place-order-page__customer-summary strong { overflow: hidden; color: #1e293b; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.manager-place-order-page__customer-summary small { overflow: hidden; color: #64748b; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.manager-place-order-page__customer-type { flex: 0 0 auto; padding: 5px 7px; border-radius: 20px; background: #eff6ff; color: #1d4ed8; font-size: 8px; font-weight: 650; }
+
+.manager-place-order-page__items { display: grid; gap: 10px; padding: 0 15px; }
+.manager-place-order-page__item-card { min-width: 0; overflow: visible; border: 1px solid #e5eaf1; border-radius: 9px; background: #fff; }
+.manager-place-order-page__item-header { min-height: 43px; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; border-bottom: 1px solid #f1f5f9; background: #fbfdff; border-radius: 9px 9px 0 0; }
+.manager-place-order-page__item-index { color: #64748b; font-size: 9px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.manager-place-order-page__line-total { display: flex; align-items: center; gap: 7px; color: #94a3b8; font-size: 8px; }
+.manager-place-order-page__line-total strong { color: #1e293b; font-size: 10px; }
+.manager-place-order-page__item-fields { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(150px, 1fr) minmax(100px, .55fr); align-items: start; gap: 12px; padding: 13px 12px 10px; }
+.manager-place-order-page__price-info { display: flex; align-items: center; gap: 12px; margin: 0 12px 12px; padding: 9px 10px; border: 1px solid #dbeafe; border-radius: 7px; background: #f8fbff; }
+.manager-place-order-page__price-info > span:first-child { display: flex; flex-direction: column; gap: 3px; }
+.manager-place-order-page__price-info small { color: #64748b; font-size: 8px; }
+.manager-place-order-page__price-info strong { color: #1e40af; font-size: 11px; }
+.manager-place-order-page__pricing-note { color: #94a3b8; font-size: 8px; }
+.manager-place-order-page__materials { margin: 0 12px 12px; padding: 11px; border: 1px solid #eef2f7; border-radius: 8px; background: #fcfdff; }
+.manager-place-order-page__subsection-heading { margin-bottom: 9px; }
+.manager-place-order-page__subsection-heading h3 { margin: 0; color: #334155; font-size: 10px; font-weight: 700; }
+.manager-place-order-page__subsection-heading p { margin: 3px 0 0; color: #94a3b8; font-size: 8px; }
+.manager-place-order-page__materials > .manager-place-order-page__field { max-width: 400px; }
+.manager-place-order-page__selected-materials { display: grid; gap: 7px; margin-top: 9px; }
+.manager-place-order-page__material-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(120px, 180px) auto; align-items: center; gap: 10px; padding: 8px 9px; border: 1px solid #e8edf4; border-radius: 7px; background: #fff; }
+.manager-place-order-page__material-name { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.manager-place-order-page__material-name strong { overflow: hidden; color: #334155; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.manager-place-order-page__material-name small { overflow: hidden; color: #94a3b8; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.manager-place-order-page__material-quantity { display: flex; align-items: center; gap: 7px; color: #64748b; font-size: 8px; }
+.manager-place-order-page__material-quantity .form-input { width: 75px; min-height: 29px; padding: 5px 7px; }
+.manager-place-order-page__remove-button { min-height: 27px; padding: 0 8px; border: 1px solid #fee2e2; border-radius: 5px; background: #fff; color: #b91c1c; cursor: pointer; font: inherit; font-size: 8px; font-weight: 600; }
+.manager-place-order-page__remove-button:hover { background: #fef2f2; }
+.manager-place-order-page__add-item-row { display: flex; justify-content: flex-start; padding: 10px 15px 14px; }
+.manager-place-order-page__secondary-button { min-height: 32px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 10px; border: 1px solid #dbe3ee; border-radius: 6px; background: #fff; color: #334155; cursor: pointer; font: inherit; font-size: 9px; font-weight: 650; }
+.manager-place-order-page__secondary-button:hover { border-color: #bfdbfe; background: #f8fbff; color: #1d4ed8; }
+.manager-place-order-page__delivery-fields { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+.manager-place-order-page__footer { position: sticky; bottom: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 15px; padding: 12px 15px; border: 1px solid #dbe3ee; border-radius: 10px; background: rgba(255, 255, 255, .96); box-shadow: 0 -4px 18px rgba(15, 23, 42, .045); backdrop-filter: blur(8px); }
+.manager-place-order-page__grand-total { display: flex; align-items: baseline; gap: 12px; }
+.manager-place-order-page__grand-total span { color: #64748b; font-size: 10px; font-weight: 600; }
+.manager-place-order-page__grand-total strong { color: #0f172a; font-size: 20px; font-weight: 700; letter-spacing: -.02em; }
+.manager-place-order-page__submit-button { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 0 16px; border: 0; border-radius: 7px; background: #2563eb; color: #fff; cursor: pointer; font: inherit; font-size: 10px; font-weight: 700; box-shadow: 0 2px 4px rgba(37, 99, 235, .2); }
+.manager-place-order-page__submit-button:hover { background: #1d4ed8; }
+.manager-place-order-page__submit-button > span { font-size: 12px; }
+.manager-place-order-page a:focus-visible,.manager-place-order-page button:focus-visible,.manager-place-order-page input:focus-visible,.manager-place-order-page select:focus-visible { outline: 3px solid rgba(59, 130, 246, .32); outline-offset: 2px; }
+
+@media (max-width: 900px) { .manager-place-order-page__item-fields { grid-template-columns: minmax(0, 1fr) minmax(130px, .7fr); } .manager-place-order-page__item-fields > :first-child { grid-column: 1 / -1; } }
+@media (max-width: 820px) { .manager-place-order-page__content { padding-top: 18px; } }
+@media (max-width: 560px) {
+  .manager-place-order-page__section-header { padding: 11px; }
+  .manager-place-order-page__section-body,.manager-place-order-page__delivery-fields { grid-template-columns: minmax(0, 1fr); padding: 12px; }
+  .manager-place-order-page__field--wide,.manager-place-order-page__customer-summary { grid-column: auto; }
+  .manager-place-order-page__items { padding: 0 9px; }
+  .manager-place-order-page__item-fields { grid-template-columns: minmax(0, 1fr); padding: 11px; }
+  .manager-place-order-page__item-fields > :first-child { grid-column: auto; }
+  .manager-place-order-page__materials { margin: 0 9px 9px; padding: 9px; }
+  .manager-place-order-page__material-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .manager-place-order-page__material-quantity { grid-column: 1; grid-row: 2; justify-content: space-between; }
+  .manager-place-order-page__remove-button { grid-column: 2; grid-row: 1 / span 2; }
+  .manager-place-order-page__footer { padding: 10px; }
+  .manager-place-order-page__grand-total { align-items: flex-start; flex-direction: column; gap: 3px; }
+  .manager-place-order-page__grand-total strong { font-size: 17px; }
+  .manager-place-order-page__submit-button { padding: 0 11px; }
+}
+
+.manager-orders-page__form-container .manager-place-order-form,
+.worker-place-order-panel__form .manager-place-order-form {
+  width: 100%;
+  padding: 0;
+}
+
+.manager-place-order-page__error {
+  margin: 0 0 12px;
+  padding: 11px 14px;
+  border: 1px solid #f1c7c7;
+  border-radius: 8px;
+  background: #fff5f5;
+  color: #9b2929;
+  font-size: 14px;
+}
+
+@media (max-width: 767px) {
+  .manager-place-order-page__delivery-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .manager-place-order-page__item-fields { grid-template-columns: minmax(0, 1fr) minmax(120px, .7fr); }
+}
+
+@media (max-width: 560px) {
+  .manager-place-order-page__delivery-fields,
+  .manager-place-order-page__item-fields { grid-template-columns: minmax(0, 1fr); }
+  .manager-place-order-page__item-fields > :first-child { grid-column: auto; }
+  .manager-place-order-page__field--wide,
+  .manager-place-order-page__customer-summary { grid-column: auto; }
+}

@@ -7,11 +7,29 @@ from core.services.task_creator import create_tasks_for_order
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, write_only=True)
 
+    customer_name = serializers.CharField(
+        source="customer.name",
+        read_only=True
+    )
+
+    customer_company = serializers.CharField(
+        source="customer.company_name",
+        read_only=True
+    )
+
+    customer_phone = serializers.CharField(
+        source="customer.phone",
+        read_only=True
+    )
+
     class Meta:
         model = Order
         fields = [
             "id",
             "customer",
+            "customer_name",
+            "customer_company",
+            "customer_phone",
             "delivery_date",
             "delivery_method",
             "order_get_method",

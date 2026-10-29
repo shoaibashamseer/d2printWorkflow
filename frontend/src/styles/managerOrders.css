@@ -1,0 +1,164 @@
+.manager-orders-page {
+  --orders-border: #e2e8f0;
+  --orders-muted: #64748b;
+  --orders-ink: #0f172a;
+}
+
+.manager-orders-page__content { width: min(100%, 1420px); }
+.manager-orders-page__heading { align-items: center; }
+.manager-orders-page__heading > div { min-width: 0; }
+.manager-orders-page__primary-button,
+.manager-orders-page__secondary-button {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 13px;
+  border: 1px solid #1d4ed8;
+  border-radius: 7px;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+.manager-orders-page__primary-button:hover { background: #1d4ed8; }
+.manager-orders-page__secondary-button { border-color: var(--orders-border); background: #fff; color: #334155; }
+.manager-orders-page__secondary-button:hover { background: #f8fafc; }
+.manager-orders-page__primary-button:focus-visible,
+.manager-orders-page__secondary-button:focus-visible,
+.manager-orders-page__close-button:focus-visible,
+.manager-orders-page__search input:focus-visible {
+  outline: 3px solid rgba(59, 130, 246, .3);
+  outline-offset: 2px;
+}
+
+.manager-orders-page__panel {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--orders-border);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, .035);
+}
+.manager-orders-page__toolbar {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 14px 17px;
+  border-bottom: 1px solid #edf1f6;
+}
+.manager-orders-page__toolbar h2 { margin: 0; color: #1e293b; font-size: 13px; font-weight: 700; }
+.manager-orders-page__toolbar p { margin: 5px 0 0; color: var(--orders-muted); font-size: 10px; }
+.manager-orders-page__search {
+  width: min(100%, 360px);
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid var(--orders-border);
+  border-radius: 7px;
+  color: #94a3b8;
+}
+.manager-orders-page__search > span { font-size: 18px; line-height: 1; }
+.manager-orders-page__search input { width: 100%; min-width: 0; border: 0; outline: none; color: #334155; font: inherit; font-size: 10px; }
+.manager-orders-page__search input::placeholder { color: #94a3b8; }
+.manager-orders-page__table-scroll { width: 100%; overflow-x: auto; }
+.manager-orders-page__table { width: 100%; min-width: 840px; border-collapse: collapse; text-align: left; }
+.manager-orders-page__table th {
+  padding: 11px 12px;
+  border-bottom: 1px solid #e8edf3;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+.manager-orders-page__table td {
+  padding: 12px;
+  border-bottom: 1px solid #edf1f6;
+  color: #334155;
+  font-size: 10px;
+  vertical-align: top;
+}
+.manager-orders-page__table tbody tr:last-child td { border-bottom: 0; }
+.manager-orders-page__table tbody tr:hover { background: #fbfdff; }
+.manager-orders-page__table td > strong { display: block; color: #1e293b; font-size: 10px; font-weight: 650; }
+.manager-orders-page__table td > small { display: block; margin-top: 4px; color: var(--orders-muted); font-size: 9px; }
+.manager-orders-page__order-id { color: #475569 !important; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
+.manager-orders-page__item-line { display: block; margin-bottom: 4px; white-space: nowrap; }
+.manager-orders-page__task-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 7px; margin-bottom: 7px; }
+.manager-orders-page__task-line:last-child { margin-bottom: 0; }
+.manager-orders-page__task-line > strong { flex-basis: 100%; color: #475569; font-size: 9px; font-weight: 650; }
+.manager-orders-page__task-line > span { color: #475569; font-size: 9px; }
+.manager-orders-page__task-line > small { color: #64748b; font-size: 9px; }
+.manager-orders-page__status { padding: 3px 6px; border-radius: 20px; background: #f1f5f9; color: #475569 !important; font-size: 8px !important; font-weight: 650; }
+.manager-orders-page__status--ready { background: #eff6ff; color: #1d4ed8 !important; }
+.manager-orders-page__status--in_progress { background: #fffbeb; color: #b45309 !important; }
+.manager-orders-page__status--completed { background: #ecfdf5; color: #047857 !important; }
+.manager-orders-page__muted { color: #94a3b8; }
+.manager-orders-page__total { color: #0f172a !important; font-weight: 650; white-space: nowrap; }
+.manager-orders-page__state { min-height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 24px; color: var(--orders-muted); font-size: 11px; text-align: center; }
+.manager-orders-page__state strong { color: #334155; font-size: 12px; }
+.manager-orders-page__state--error { color: #b91c1c; }
+.manager-orders-page__state--error strong { color: #991b1b; }
+
+.manager-orders-page__overlay {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, .48);
+}
+.manager-orders-page__dialog {
+  width: min(100%, 900px);
+  max-height: min(92vh, 900px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #dbe3ee;
+  border-radius: 12px;
+  background: #f8fafc;
+  box-shadow: 0 22px 70px rgba(15, 23, 42, .25);
+}
+.manager-orders-page__dialog-header { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--orders-border); background: #fff; }
+.manager-orders-page__dialog-header .manager-dashboard__eyebrow { margin: 0; }
+.manager-orders-page__dialog-header h2 { margin: 5px 0 0; color: var(--orders-ink); font-size: 19px; font-weight: 700; }
+.manager-orders-page__close-button { width: 34px; height: 34px; flex: 0 0 auto; border: 1px solid var(--orders-border); border-radius: 7px; background: #fff; color: #475569; cursor: pointer; font-size: 22px; line-height: 1; }
+.manager-orders-page__close-button:hover { background: #f1f5f9; }
+.manager-orders-page__form-container { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 0 20px 20px; }
+.manager-orders-page__form-container > .manager-place-order-page__content { width: 100%; padding: 16px 0 0; }
+
+@media (max-width: 1023px) {
+  .manager-orders-page__content { padding-right: 19px; padding-left: 19px; }
+  .manager-orders-page__table { min-width: 790px; }
+}
+
+@media (max-width: 767px) {
+  .manager-orders-page__content { padding: 17px 13px 24px; }
+  .manager-orders-page__heading { align-items: stretch; gap: 13px; }
+  .manager-orders-page__primary-button { align-self: flex-start; min-height: 42px; }
+  .manager-orders-page__toolbar { align-items: stretch; flex-direction: column; gap: 12px; padding: 13px; }
+  .manager-orders-page__search { width: 100%; min-height: 42px; }
+  .manager-orders-page__table { min-width: 730px; }
+  .manager-orders-page__table th, .manager-orders-page__table td { padding: 10px 9px; }
+  .manager-orders-page__overlay { align-items: flex-end; padding: 0; }
+  .manager-orders-page__dialog { width: 100%; max-height: 96vh; border-radius: 14px 14px 0 0; }
+  .manager-orders-page__dialog-header { padding: 13px 15px; }
+  .manager-orders-page__form-container { padding: 0 12px 12px; }
+}
+
+@media (max-width: 420px) {
+  .manager-orders-page__table { min-width: 680px; }
+  .manager-orders-page__dialog-header h2 { font-size: 17px; }
+}

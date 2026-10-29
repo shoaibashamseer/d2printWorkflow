@@ -8,22 +8,55 @@ from rest_framework.permissions import AllowAny
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def login_view(request):
+
     username = request.data.get("username")
     password = request.data.get("password")
 
-    user = authenticate(username=username, password=password)
-    if not user:
-        return Response({"error": "Invalid credentials"}, status=400)
+    user = authenticate(
+        username=username,
+        password=password
+    )
 
-    token, _ = Token.objects.get_or_create(user=user)
-    profile = getattr(user, "userprofile", None)
-    role = profile.role.name if profile and profile.role else None
-    print("LOGIN ROLE:", role)
+    if not user:
+        return Response(
+            {"error": "Invalid credentials"},
+            status=400
+        )
+
+    token, _ = Token.objects.get_or_create(
+        user=user
+    )
+
+    profile = getattr(
+        user,
+        "userprofile",
+        None
+    )
+
+    role = None
+    user_type = None
+    must_change_password = False
+
+    if profile:
+        must_change_password = profile.must_change_password
+
+        if profile.role:
+            role = profile.role.name
+            user_type = profile.role.user_type
+
+    print(
+        "LOGIN DEBUG:",
+        "USER =", user.username,
+        "PROFILE =", profile,
+        "ROLE =", role,
+        "USER TYPE =", user_type
+    )
 
     return Response({
         "token": token.key,
-        "id": user.id,
+        "user_id": user.id,
         "username": user.username,
-        "must_change_password": profile.must_change_password,
         "role": role,
+        "user_type": user_type,
+        "must_change_password": must_change_password,
     })

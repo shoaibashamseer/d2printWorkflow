@@ -11,22 +11,34 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+# Read optional local configuration without requiring a third-party package.
+# Deployment environments can provide the same values as process variables.
+ENV_FILE = BASE_DIR / '.env'
+if ENV_FILE.is_file():
+    for env_line in ENV_FILE.read_text(encoding='utf-8').splitlines():
+        env_line = env_line.strip()
+        if not env_line or env_line.startswith('#') or '=' not in env_line:
+            continue
+        env_name, _, env_value = env_line.partition('=')
+        env_value = env_value.strip()
+        if len(env_value) >= 2 and env_value[0] == env_value[-1] and env_value[0] in ('"', "'"):
+            env_value = env_value[1:-1]
+        os.environ.setdefault(env_name.strip(), env_value)
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-vy6m%=-54c$%ln%d5pj96fwid=&4+bk4y)3#c0a1th@v-v5t&)'
+SECRET_KEY = os.environ.get('SECRET_KEY', '')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = ['*']
-
+ALLOWED_HOSTS = ['92.4.89.85', 'd2print.in', 'www.d2print.in', 'localhost', '127.0.0.1']
 
 # Application definition
 
@@ -78,13 +90,17 @@ WSGI_APPLICATION = 'WorkflowApp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME', 'd2print_workflow_db'),
+        'USER': os.environ.get('DB_USER', 'd2print_user'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -121,7 +137,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = '/home/ubuntu/d2print_workflow/staticfiles'
+MEDIA_URL = '/media/'
+# In production set D2PRINT_MEDIA_ROOT to a durable, backed-up server volume.
+# The project currently has no external object-storage integration.
+MEDIA_ROOT = Path(os.environ.get('D2PRINT_MEDIA_ROOT', BASE_DIR / 'media'))
+
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [

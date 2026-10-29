@@ -1,48 +1,103 @@
 from rest_framework import serializers
-from core.models import OrderItem, OrderFeatureValue, Product, Workflow
 
-
-from core.models import OrderItemMaterial, RawMaterialVariant
+from core.models import (
+    OrderItem,
+    OrderFeatureValue,
+    Product,
+    OrderItemMaterial,
+    RawMaterialVariant,
+)
 
 
 class OrderItemSerializer(serializers.Serializer):
     product = serializers.IntegerField()
-    workflow = serializers.IntegerField()
     quantity = serializers.IntegerField()
-    features = serializers.ListField()
-    materials = serializers.ListField(required=False)   # ⭐ NEW
+    features = serializers.ListField(required=False, default=list)
+    materials = serializers.ListField(required=False, default=list)
 
     def create(self, validated_data):
         order = self.context["order"]
 
-        product = Product.objects.get(pk=validated_data["product"])
-        workflow = Workflow.objects.get(pk=validated_data["workflow"])
+        # -----------------------------------------
+        # PRODUCT
+        # -----------------------------------------
+
+        product = Product.objects.get(
+            pk=validated_data["product"]
+        )
+
+        # -----------------------------------------
+        # AUTOMATIC WORKFLOW
+        # -----------------------------------------
+
+        workflow = product.default_workflow
+
+        if not workflow:
+            raise serializers.ValidationError({
+                "product": (
+                    f"Product '{product.name}' "
+                    "does not have a default workflow."
+                )
+            })
+
         quantity = validated_data.get("quantity", 1)
+
+        unit_price = (
+            product.wholesale_price
+            if order.customer.customer_type == "wholesale"
+            else product.retail_price
+        )
+
+        # -----------------------------------------
+        # CREATE ORDER ITEM
+        # -----------------------------------------
 
         item = OrderItem.objects.create(
             order=order,
             product=product,
             workflow=workflow,
-            quantity=quantity
+            quantity=quantity,
+            product_name_at_order=product.name,
+            product_description_at_order=product.description,
+            customer_name_at_order=order.customer.name,
+            quantity_at_order=quantity,
+            unit_price_at_order=unit_price,
         )
 
-        # save features
-        for f in validated_data["features"]:
+        # -----------------------------------------
+        # SAVE FEATURES
+        # -----------------------------------------
+
+        for f in validated_data.get("features", []):
+
             OrderFeatureValue.objects.create(
                 order_item=item,
                 feature_name=f["name"],
                 value=f["value"]
             )
 
-        # ⭐ save selected materials
+        # -----------------------------------------
+        # SAVE MATERIALS
+        # -----------------------------------------
+
         for m in validated_data.get("materials", []):
-            variant = RawMaterialVariant.objects.get(pk=m["variant"])
-            used_qty = m["quantity_used"]
+
+            variant = RawMaterialVariant.objects.get(
+                pk=m["variant"]
+            )
+
+            used_qty = float(
+                m["quantity_used"]
+            )
 
             if variant.stock < used_qty:
-                raise serializers.ValidationError(
-                    f"Not enough stock for {variant.name}"
-                )
+
+                raise serializers.ValidationError({
+                    "materials": (
+                        f"Not enough stock for "
+                        f"{variant.name}."
+                    )
+                })
 
             OrderItemMaterial.objects.create(
                 order_item=item,
@@ -50,8 +105,10 @@ class OrderItemSerializer(serializers.Serializer):
                 quantity_used=used_qty
             )
 
+            # Reduce stock
             variant.stock -= used_qty
-            variant.save()
+            variant.save(
+                update_fields=["stock"]
+            )
 
         return item
-

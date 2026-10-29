@@ -1,0 +1,188 @@
+.manager-staff-page { --ms-ink: #0f172a; --ms-muted: #64748b; --ms-border: #e2e8f0; }
+.manager-staff-page__content { padding-top: 23px; }
+.manager-staff-page__heading { align-items: center; }
+
+.manager-staff-page__primary-button,
+.manager-staff-page__secondary-button,
+.manager-staff-page__edit-button {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 650;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.manager-staff-page__primary-button { background: #2563eb; color: #fff; box-shadow: 0 1px 2px rgba(37, 99, 235, .18); }
+.manager-staff-page__primary-button:hover { background: #1d4ed8; }
+.manager-staff-page__primary-button:disabled { cursor: not-allowed; opacity: .55; }
+.manager-staff-page__secondary-button { border-color: #dbe3ee; background: #fff; color: #334155; }
+.manager-staff-page__secondary-button:hover { border-color: #bfdbfe; background: #f8fbff; color: #1d4ed8; }
+.manager-staff-page__edit-button { min-height: 29px; padding: 0 9px; border-color: #dbe3ee; background: #fff; color: #475569; white-space: nowrap; }
+.manager-staff-page__edit-button:hover { border-color: #bfdbfe; background: #eff6ff; color: #1d4ed8; }
+
+.manager-staff-page__alert { margin-bottom: 12px; padding: 10px 12px; border: 1px solid #fecaca; border-radius: 7px; background: #fef2f2; color: #991b1b; font-size: 10px; }
+.manager-staff-page__directory { overflow: hidden; border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; box-shadow: 0 2px 7px rgba(15, 23, 42, .03); }
+.manager-staff-page__tabs { min-height: 49px; display: flex; gap: 18px; padding: 0 15px; border-bottom: 1px solid #eef2f7; }
+.manager-staff-page__tabs > button { position: relative; min-height: 49px; display: inline-flex; align-items: center; gap: 7px; padding: 0 2px; border: 0; background: transparent; color: #64748b; cursor: pointer; font: inherit; font-size: 10px; font-weight: 600; }
+.manager-staff-page__tabs > button::after { position: absolute; right: 0; bottom: -1px; left: 0; height: 2px; background: transparent; content: ""; }
+.manager-staff-page__tabs > button.is-active { color: #1d4ed8; }
+.manager-staff-page__tabs > button.is-active::after { background: #2563eb; }
+.manager-staff-page__tabs > button > span { min-width: 19px; height: 18px; display: grid; place-items: center; padding: 0 4px; border-radius: 10px; background: #f1f5f9; color: #64748b; font-size: 8px; font-weight: 700; }
+.manager-staff-page__tabs > button.is-active > span { background: #eff6ff; color: #2563eb; }
+
+.manager-staff-page__toolbar { min-height: 54px; display: flex; align-items: center; gap: 12px; padding: 9px 13px; border-bottom: 1px solid #eef2f7; }
+.manager-staff-page__search { width: min(100%, 330px); min-height: 33px; display: flex; align-items: center; gap: 8px; padding: 0 10px; border: 1px solid #e2e8f0; border-radius: 7px; background: #fff; color: #94a3b8; }
+.manager-staff-page__search > span { font-size: 17px; line-height: 1; }
+.manager-staff-page__search input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: #334155; font: inherit; font-size: 10px; }
+.manager-staff-page__search input::placeholder { color: #94a3b8; }
+.manager-staff-page__result-count { margin-left: auto; color: #94a3b8; font-size: 9px; }
+.manager-staff-page__table-wrap { overflow-x: auto; }
+.manager-staff-page__table { width: 100%; border-collapse: collapse; text-align: left; }
+.manager-staff-page__table th { height: 37px; padding: 0 12px; border-bottom: 1px solid #e8edf4; background: #f8fafc; color: #64748b; font-size: 8px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+.manager-staff-page__table td { min-height: 64px; padding: 9px 12px; border-bottom: 1px solid #f1f5f9; color: #475569; font-size: 10px; vertical-align: middle; }
+.manager-staff-page__table tbody tr:last-child td { border-bottom: 0; }
+
+.manager-staff-page__member { min-width: 175px; display: flex; align-items: center; gap: 9px; }
+.manager-staff-page__member-avatar,.manager-staff-page__role-mark { width: 32px; height: 32px; display: grid; flex: 0 0 auto; place-items: center; border-radius: 9px; background: #eff6ff; color: #2563eb; font-size: 10px; font-weight: 700; }
+.manager-staff-page__member > span:last-child { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.manager-staff-page__member strong { overflow: hidden; color: #1e293b; font-size: 10px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+.manager-staff-page__member small { overflow: hidden; color: #94a3b8; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.manager-staff-page__role-badge { display: inline-flex; align-items: center; min-height: 23px; padding: 0 8px; border: 1px solid #dbeafe; border-radius: 20px; background: #eff6ff; color: #1d4ed8; font-size: 8px; font-weight: 650; white-space: nowrap; }
+.manager-staff-page__status { display: inline-flex; align-items: center; gap: 5px; padding: 4px 7px; border-radius: 20px; background: #ecfdf5; color: #15803d; font-size: 8px; font-weight: 700; white-space: nowrap; }
+.manager-staff-page__status i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.manager-staff-page__status.is-inactive { background: #f1f5f9; color: #64748b; }
+.manager-staff-page__task-list { min-width: 160px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
+.manager-staff-page__task-count { color: #475569; font-size: 9px; font-weight: 700; }
+.manager-staff-page__task-detail { max-width: 205px; display: flex; flex-direction: column; gap: 2px; }
+.manager-staff-page__task-detail strong { overflow: hidden; max-width: 100%; color: #334155; font-size: 8px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.manager-staff-page__task-detail small { color: #94a3b8; font-size: 8px; white-space: nowrap; }
+.manager-staff-page__task-status { color: #64748b; font-style: normal; }
+.manager-staff-page__task-status--ready { color: #a16207; }
+.manager-staff-page__task-status--in_progress { color: #2563eb; }
+.manager-staff-page__task-status--completed { color: #15803d; }
+.manager-staff-page__no-task { color: #94a3b8; font-size: 9px; }
+
+.manager-staff-page__cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 14px; }
+.manager-staff-page__member-card { min-width: 0; padding: 14px; border: 1px solid #e2e8f0; border-radius: 9px; background: #fff; transition: border-color 120ms ease, box-shadow 120ms ease; }
+.manager-staff-page__member-card:hover { border-color: #cbd5e1; box-shadow: 0 3px 10px rgba(15, 23, 42, .05); }
+.manager-staff-page__card-main { min-width: 0; display: flex; align-items: flex-start; gap: 10px; }
+.manager-staff-page__profile-link { min-width: 0; flex: 1; display: flex; align-items: flex-start; gap: 10px; padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; text-align: left; }
+.manager-staff-page__profile-link:focus-visible { outline: 2px solid #60a5fa; outline-offset: 3px; border-radius: 5px; }
+.manager-staff-page__avatar-wrap { position: relative; flex: 0 0 auto; }
+.manager-staff-page__member-avatar { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; background: #7c3aed; color: #fff; font-size: 10px; font-weight: 700; }
+.manager-staff-page__member-avatar--photo { object-fit: cover; }
+.manager-staff-page__member-card:nth-child(6n + 2) .manager-staff-page__member-avatar { background: #db2777; }
+.manager-staff-page__member-card:nth-child(6n + 3) .manager-staff-page__member-avatar { background: #2563eb; }
+.manager-staff-page__member-card:nth-child(6n + 4) .manager-staff-page__member-avatar { background: #0891b2; }
+.manager-staff-page__member-card:nth-child(6n + 5) .manager-staff-page__member-avatar { background: #059669; }
+.manager-staff-page__member-card:nth-child(6n) .manager-staff-page__member-avatar { background: #d97706; }
+.manager-staff-page__presence { position: absolute; right: -1px; bottom: -1px; width: 11px; height: 11px; border: 2px solid #fff; border-radius: 50%; background: #16a34a; }
+.manager-staff-page__presence.is-inactive { background: #94a3b8; }
+.manager-staff-page__member-info { min-width: 0; flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 5px; padding-top: 1px; }
+.manager-staff-page__member-info > strong { max-width: 100%; overflow: hidden; color: #1e293b; font-size: 11px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+.manager-staff-page__card-task-count { min-width: 29px; display: flex; flex: 0 0 auto; flex-direction: column; align-items: center; padding-top: 1px; }
+.manager-staff-page__card-task-count strong { color: #1e293b; font-size: 17px; font-weight: 700; line-height: 1.05; }
+.manager-staff-page__card-task-count span { margin-top: 3px; color: #94a3b8; font-size: 8px; }
+.manager-staff-page__task-details { display: grid; gap: 5px; margin-top: 10px; padding-top: 8px; border-top: 1px solid #f1f5f9; }
+.manager-staff-page__task-details > span { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.manager-staff-page__task-details strong { overflow: hidden; color: #475569; font-size: 9px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.manager-staff-page__task-details small { overflow: hidden; color: #94a3b8; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.manager-staff-page__task-empty { margin-top: 10px; color: #94a3b8; font-size: 8px; }
+.manager-staff-page__card-footer { min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 11px; padding-top: 8px; border-top: 1px solid #f1f5f9; }
+.manager-staff-page__member-email { min-width: 0; flex: 1 1 100px; overflow: hidden; color: #94a3b8; font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.manager-staff-page__card-footer .manager-staff-page__status { margin-left: auto; }
+.manager-staff-page__card-footer .manager-staff-page__edit-button { min-height: 25px; font-size: 8px; }
+
+.manager-staff-page__roles-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 14px; }
+.manager-staff-page__roles-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 14px 14px 0; }
+.manager-staff-page__roles-toolbar > div { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.manager-staff-page__roles-toolbar strong { color: #334155; font-size: 10px; }
+.manager-staff-page__roles-toolbar span { color: #94a3b8; font-size: 8px; }
+.manager-staff-page__roles-toolbar .manager-staff-page__primary-button { flex: 0 0 auto; }
+.manager-staff-page__role-card { min-width: 0; display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid #e8edf4; border-radius: 8px; background: #fff; }
+.manager-staff-page__role-mark { background: #f5f3ff; color: #7c3aed; }
+.manager-staff-page__role-card > div { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.manager-staff-page__role-card strong { overflow: hidden; color: #1e293b; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.manager-staff-page__role-card small { color: #94a3b8; font-size: 8px; }
+.manager-staff-page__empty { min-height: 145px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 20px; color: #94a3b8; font-size: 10px; text-align: center; }
+.manager-staff-page__empty strong { color: #475569; font-size: 11px; }
+
+.manager-staff-page__profile-modal { width: min(100%, 560px); }
+.manager-staff-page__profile-eyebrow { margin: 0 0 5px !important; color: #64748b !important; font-size: 8px !important; font-weight: 700; letter-spacing: .1em; }
+.manager-staff-page__profile-content { padding: 18px 20px 4px; }
+.manager-staff-page__profile-summary { display: flex; align-items: center; gap: 16px; padding-bottom: 16px; border-bottom: 1px solid #eef2f7; }
+.manager-staff-page__profile-photo-wrap { width: 82px; height: 82px; display: grid; flex: 0 0 auto; place-items: center; overflow: hidden; border: 3px solid #eff6ff; border-radius: 50%; background: #7c3aed; color: #fff; font-size: 22px; font-weight: 700; }
+.manager-staff-page__profile-photo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+.manager-staff-page__profile-photo-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.manager-staff-page__profile-photo-actions .manager-staff-page__primary-button { position: relative; overflow: hidden; }
+.manager-staff-page__profile-photo-actions input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+.manager-staff-page__profile-photo-actions .manager-staff-page__primary-button:focus-within { outline: 3px solid rgba(59, 130, 246, .32); outline-offset: 2px; }
+.manager-staff-page__profile-photo-actions small { flex-basis: 100%; color: #94a3b8; font-size: 8px; }
+.manager-staff-page__profile-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin: 14px 0 0; }
+.manager-staff-page__profile-details > div { min-width: 0; padding: 10px; border: 1px solid #e8edf4; border-radius: 7px; background: #fbfdff; }
+.manager-staff-page__profile-details dt { margin-bottom: 5px; color: #94a3b8; font-size: 8px; }
+.manager-staff-page__profile-details dd { overflow-wrap: anywhere; margin: 0; color: #334155; font-size: 10px; font-weight: 600; }
+.manager-staff-page__profile-tasks { margin-top: 16px; }
+.manager-staff-page__profile-tasks h3 { margin: 0 0 8px; color: #334155; font-size: 11px; }
+.manager-staff-page__profile-tasks > p { margin: 0; color: #94a3b8; font-size: 9px; }
+.manager-staff-page__profile-tasks ul { display: grid; gap: 6px; max-height: 190px; overflow: auto; margin: 0; padding: 0; list-style: none; }
+.manager-staff-page__profile-tasks li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 9px 10px; border: 1px solid #eef2f7; border-radius: 7px; }
+.manager-staff-page__profile-tasks li > span { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.manager-staff-page__profile-tasks li strong { overflow: hidden; color: #334155; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.manager-staff-page__profile-tasks li small { color: #94a3b8; font-size: 8px; }
+.manager-staff-page__profile-tasks li em { flex: 0 0 auto; font-size: 8px; font-style: normal; font-weight: 700; }
+
+.manager-staff-page__overlay { position: fixed; z-index: 1000; inset: 0; display: grid; place-items: center; overflow: auto; padding: 20px; background: rgba(15, 23, 42, .48); }
+.manager-staff-page__modal { width: min(100%, 460px); max-height: min(90vh, 650px); overflow: auto; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; box-shadow: 0 24px 70px rgba(15, 23, 42, .22); }
+.manager-staff-page__modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; padding: 19px 20px 15px; border-bottom: 1px solid #eef2f7; }
+.manager-staff-page__modal-header h2 { margin: 0; color: #0f172a; font-size: 17px; font-weight: 700; letter-spacing: -.02em; }
+.manager-staff-page__modal-header p { margin: 5px 0 0; color: #64748b; font-size: 10px; }
+.manager-staff-page__modal-header > button { width: 28px; height: 28px; border: 0; border-radius: 6px; background: transparent; color: #64748b; cursor: pointer; font-size: 21px; line-height: 1; }
+.manager-staff-page__modal-header > button:hover { background: #f1f5f9; color: #0f172a; }
+.manager-staff-page__form-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 13px; padding: 18px 20px; }
+.manager-staff-page__field { min-width: 0; display: flex; flex-direction: column; gap: 6px; color: #334155; font-size: 10px; font-weight: 600; }
+.manager-staff-page__field b { color: #dc2626; }
+.manager-staff-page__field input,.manager-staff-page__field select { width: 100%; min-height: 35px; padding: 7px 9px; border: 1px solid #dbe3ee; border-radius: 6px; outline: none; background: #fff; color: #334155; font: inherit; font-size: 10px; font-weight: 400; }
+.manager-staff-page__field input:disabled { background: #f8fafc; color: #64748b; }
+.manager-staff-page__field input:focus,.manager-staff-page__field select:focus { border-color: #93c5fd; box-shadow: 0 0 0 3px rgba(59, 130, 246, .12); }
+.manager-staff-page__form-error { margin: 0 20px 13px; color: #b91c1c; font-size: 10px; }
+.manager-staff-page__modal-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px 17px; border-top: 1px solid #eef2f7; }
+.manager-staff-page__password-content { padding: 18px 20px 0; }
+.manager-staff-page__password-note { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px; border: 1px solid #bfdbfe; border-radius: 8px; background: #f8fbff; }
+.manager-staff-page__password-note strong { width: 100%; color: #334155; font-size: 10px; }
+.manager-staff-page__password-note code { flex: 1; padding: 7px 8px; border: 1px solid #dbe3ee; border-radius: 5px; background: #fff; color: #0f172a; font-size: 12px; user-select: all; }
+.manager-staff-page__password-content > p { margin: 9px 0 14px; color: #64748b; font-size: 9px; }
+.manager-staff-page__password-content .manager-staff-page__form-error { margin: 0 0 12px; }
+
+.manager-staff-page a:focus-visible,.manager-staff-page button:focus-visible,.manager-staff-page input:focus-visible,.manager-staff-page select:focus-visible { outline: 3px solid rgba(59, 130, 246, .32); outline-offset: 2px; }
+
+@media (max-width: 1000px) {
+  .manager-staff-page__cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .manager-staff-page__roles-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .manager-staff-page__heading { align-items: flex-start; }
+  .manager-staff-page__toolbar { align-items: stretch; flex-direction: column; }
+  .manager-staff-page__search { width: 100%; }
+  .manager-staff-page__result-count { margin-left: 0; }
+  .manager-staff-page__roles-list { grid-template-columns: minmax(0, 1fr); padding: 10px; }
+  .manager-staff-page__roles-toolbar { align-items: flex-start; padding: 12px 10px 0; }
+  .manager-staff-page__cards { grid-template-columns: minmax(0, 1fr); gap: 9px; padding: 10px; }
+  .manager-staff-page__member-card { padding: 13px; }
+  .manager-staff-page__profile-content { padding: 16px 16px 4px; }
+  .manager-staff-page__profile-summary { align-items: flex-start; gap: 12px; }
+  .manager-staff-page__profile-photo-wrap { width: 68px; height: 68px; }
+  .manager-staff-page__profile-details { grid-template-columns: minmax(0, 1fr); }
+  .manager-staff-page__modal-header { padding: 17px 16px 13px; }
+  .manager-staff-page__form-grid { padding: 16px; }
+  .manager-staff-page__modal-actions { padding: 12px 16px 15px; }
+}

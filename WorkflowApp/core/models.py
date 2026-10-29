@@ -1,5 +1,12 @@
 from django.db import models
 from django.conf import settings
+from pathlib import Path
+from uuid import uuid4
+
+
+def delivery_photo_upload_to(instance, filename):
+    extension = Path(filename).suffix.lower()
+    return f"delivery_photos/{instance.order_item_id}/{uuid4().hex}{extension}"
 
 class Role(models.Model):
 
@@ -9,7 +16,7 @@ class Role(models.Model):
         ("boss", "Boss"),
     )
 
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
 
     user_type = models.CharField(
         max_length=20,
@@ -49,8 +56,23 @@ class Customer(models.Model):
         ("wholesale", "Wholesale"),
         ("retail", "Retail"),
     )
-    name = models.CharField(max_length=150)
-    phone = models.CharField(max_length=15, unique=True)
+    DELIVERY_METHODS = (
+        ("bus", "Bus"),
+        ("courier", "Courier"),
+        ("direct", "Direct"),
+        ("minnal" , "Minnal"),
+        ("others", "Others"),
+    )
+
+    ORDER_GET_METHODS = (
+        ("direct", "Direct"),
+        ("whatsapp", "WhatsApp"),
+        ("email", "Email"),
+        ("call", "Call"),
+        ("person", "Person"),
+    )
+    name = models.CharField(max_length=150, blank =True, null =True)
+    phone = models.CharField(max_length=50, unique=True, blank=True , null=True)
     customer_type = models.CharField(
         max_length=20,
         choices=TYPE_CHOICES,
@@ -60,6 +82,20 @@ class Customer(models.Model):
     company_name = models.CharField(max_length=150, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     is_frequent = models.BooleanField(default=False)
+     # ⭐ Customer's usual delivery method
+    delivery_method = models.CharField(
+        max_length=50,
+        choices=DELIVERY_METHODS,
+        default="direct"
+    )
+
+    # ⭐ Customer's usual order-get method
+    order_get_method = models.CharField(
+        max_length=50,
+        choices=ORDER_GET_METHODS,
+        default="direct"
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -129,7 +165,7 @@ class Order(models.Model):
         ('completed', 'Completed'),
     )
 
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
     created_by =  models.ForeignKey(
     settings.AUTH_USER_MODEL,
     on_delete=models.SET_NULL,
@@ -147,12 +183,62 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.PROTECT)
     workflow = models.ForeignKey(Workflow, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
+    # Nullable snapshots intentionally remain empty for pre-existing orders:
+    # their original product/customer values and prices cannot be reconstructed.
+    product_name_at_order = models.CharField(max_length=150, null=True, blank=True)
+    product_description_at_order = models.TextField(null=True, blank=True)
+    customer_name_at_order = models.CharField(max_length=150, null=True, blank=True)
+    quantity_at_order = models.PositiveIntegerField(null=True, blank=True)
+    unit_price_at_order = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     def __str__(self):
         return f"{self.order.id} - {self.product.name}"
+
+
+class OrderItemLifecycle(models.Model):
+    """Delivery, billing, and payment confirmations for one order item."""
+
+    order_item = models.OneToOneField(
+        OrderItem,
+        on_delete=models.PROTECT,
+        related_name="lifecycle",
+    )
+    delivery_photo = models.ImageField(
+        upload_to=delivery_photo_upload_to,
+        blank=True,
+        null=True,
+    )
+    delivery_confirmed_at = models.DateTimeField(blank=True, null=True)
+    delivery_confirmed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="item_deliveries_confirmed",
+    )
+    billing_completed_at = models.DateTimeField(blank=True, null=True)
+    billing_completed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="item_billing_completions_confirmed",
+    )
+    payment_received_at = models.DateTimeField(blank=True, null=True)
+    payment_received_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="item_payments_confirmed",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Lifecycle for OrderItem #{self.order_item_id}"
 
 class OrderFeatureValue(models.Model):
     order_item = models.ForeignKey(

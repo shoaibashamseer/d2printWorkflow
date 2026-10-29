@@ -1,258 +1,305 @@
-import { useEffect, useState } from "react";
+import ManagerSidebar from "../../components/ManagerSidebar";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import api from "../../api/api";
-import "../../styles/manager.css";
+import formatDisplayValue from "../worker/formatDisplayValue";
+import "../../styles/managerDashboard.css";
+import "../../styles/managerMaterials.css";
+
+const emptyVariant = { material: "", name: "", stock: "", unit: "pcs", base_cost: "" };
+
+const asList = (data) => {
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.results)) return data.results;
+  return [];
+};
+
+const formatPrice = (value) => {
+  if (value === null || value === undefined || value === "") return "—";
+  const number = Number(value);
+  return Number.isFinite(number)
+    ? `₹ ${number.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`
+    : `₹ ${value}`;
+};
 
 export default function RawMaterialsManager() {
   const [materials, setMaterials] = useState([]);
   const [variants, setVariants] = useState([]);
-  const [deleteError, setDeleteError] = useState("");
+  const [search, setSearch] = useState("");
+  const [modal, setModal] = useState("");
   const [newMaterial, setNewMaterial] = useState("");
   const [lowStockLimit, setLowStockLimit] = useState("");
+  const [variantForm, setVariantForm] = useState(emptyVariant);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [loadError, setLoadError] = useState("");
+  const [formError, setFormError] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+  const [savingStockId, setSavingStockId] = useState(null);
 
-  const [variantForm, setVariantForm] = useState({
-    material: "",
-    name: "",
-    stock: "",
-    unit: "pcs",
-    base_cost:"",
-  });
-
-  const loadData = () => {
-    api.get("manager/raw-materials/").then(res => setMaterials(res.data));
-    api.get("manager/raw-material-variants/").then(res => setVariants(res.data));
-  };
-    // ⭐ AUTO HIDE DELETE WARNING
-   useEffect(() => {
-      if (!deleteError) return;
-
-      const timer = setTimeout(() => {
-        setDeleteError("");
-      }, 3000); // 3 seconds
-
-      return () => clearTimeout(timer);
-    }, [deleteError]);
-
-  useEffect(() => {
-    loadData();
+  const loadData = useCallback(async () => {
+    try {
+      const [materialResponse, variantResponse] = await Promise.all([
+        api.get("manager/raw-materials/"),
+        api.get("manager/raw-material-variants/"),
+      ]);
+      setMaterials(asList(materialResponse.data));
+      setVariants(asList(variantResponse.data));
+      setLoadError("");
+    } catch (error) {
+      setLoadError(error.response?.data?.detail || "Materials could not be loaded.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  /* ================= ADD MATERIAL ================= */
-  const addMaterial = async () => {
-    if (!newMaterial) return;
+  useEffect(() => { loadData(); }, [loadData]);
 
-    await api.post("manager/raw-materials/", {
-      name: newMaterial,
-      low_stock_limit: lowStockLimit,
+  useEffect(() => {
+    if (!deleteError) return undefined;
+    const timer = setTimeout(() => setDeleteError(""), 3000);
+    return () => clearTimeout(timer);
+  }, [deleteError]);
+
+  const materialById = useMemo(() => new Map(materials.map((material) => [String(material.id), material])), [materials]);
+  const lowStockVariants = useMemo(() => variants.filter((variant) => variant.low_stock === true), [variants]);
+  const filteredVariants = useMemo(() => {
+    const query = search.trim().toLocaleLowerCase();
+    return variants.filter((variant) => {
+      const material = materialById.get(String(variant.material));
+      return !query || [variant.material_name, material?.name, variant.name, variant.unit]
+        .filter(Boolean).join(" ").toLocaleLowerCase().includes(query);
     });
+  }, [variants, materialById, search]);
+  const materialsWithoutVariants = useMemo(() => {
+    const materialsWithVariants = new Set(variants.map((variant) => String(variant.material)));
+    const query = search.trim().toLocaleLowerCase();
+    return materials.filter((material) =>
+      !materialsWithVariants.has(String(material.id)) &&
+      (!query || String(material.name || "").toLocaleLowerCase().includes(query))
+    );
+  }, [materials, variants, search]);
+  const inventoryResultCount = filteredVariants.length + materialsWithoutVariants.length;
 
+  const openMaterialForm = () => {
     setNewMaterial("");
     setLowStockLimit("");
-
-    loadData();
+    setFormError("");
+    setModal("material");
   };
 
-  /* ================= ADD VARIANT ================= */
-  const addVariant = async () => {
-    await api.post("manager/raw-material-variants/", variantForm);
-    setVariantForm({ material: "", name: "", stock: "", unit: "pcs" , base_cost:"",});
-    loadData();
+  const openVariantForm = () => {
+    setVariantForm({ ...emptyVariant, material: materials[0]?.id ? String(materials[0].id) : "" });
+    setFormError("");
+    setModal("variant");
   };
+
+  const closeModal = () => {
+    setModal("");
+    setFormError("");
+  };
+
+  const addMaterial = async (event) => {
+    event.preventDefault();
+    if (!newMaterial.trim()) return;
+    setSaving(true);
+    setFormError("");
+    try {
+      await api.post("manager/raw-materials/", {
+        name: newMaterial,
+        low_stock_limit: lowStockLimit,
+      });
+      closeModal();
+      await loadData();
+    } catch (error) {
+      setFormError(error.response?.data?.detail || "Material could not be added.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const addVariant = async (event) => {
+    event.preventDefault();
+    setSaving(true);
+    setFormError("");
+    try {
+      await api.post("manager/raw-material-variants/", variantForm);
+      closeModal();
+      await loadData();
+    } catch (error) {
+      setFormError(error.response?.data?.detail || "Material variant could not be added.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const saveStock = async (variant) => {
+    setSavingStockId(variant.id);
+    setLoadError("");
+    try {
+      await api.put(`manager/raw-material-variants/${variant.id}/`, variant);
+      await loadData();
+    } catch (error) {
+      setLoadError(error.response?.data?.detail || "Stock could not be saved.");
+    } finally {
+      setSavingStockId(null);
+    }
+  };
+
+  const deleteVariant = async (variant) => {
+    if (!window.confirm(`Delete ${variant.name || "this variant"}?`)) return;
+    try {
+      await api.delete(`manager/raw-material-variants/${variant.id}/`);
+      setDeleteError("");
+      await loadData();
+    } catch (error) {
+      setDeleteError(error.response?.data?.error || "Cannot delete this material variant.");
+    }
+  };
+
+  const logout = () => {
+    localStorage.clear();
+    window.location.href = "/";
+  };
+
+  const role = formatDisplayValue(localStorage.getItem("role"), "Manager");
+  const currentDate = new Intl.DateTimeFormat(undefined, {
+    weekday: "short", day: "2-digit", month: "short", year: "numeric",
+  }).format(new Date());
 
   return (
-    <div className="manager-page">
-      <h1>Raw Materials & Stock</h1>
+    <div className="manager-dashboard manager-materials-page">
+      <ManagerSidebar role={role} onLogout={logout} />
 
-      {/* ================= ADD MATERIAL ================= */}
-      <div className="form-card">
-        <h3>Add Raw Material</h3>
+      <main className="manager-dashboard__main">
+        <header className="manager-dashboard__topbar">
+          <div className="manager-dashboard__breadcrumb">
+            <p className="manager-dashboard__eyebrow">MANAGER AREA</p>
+            <span className="manager-dashboard__breadcrumb-separator" aria-hidden="true">›</span>
+            <p className="manager-dashboard__crumb">Materials</p>
+          </div>
+          <span className="manager-dashboard__date">{currentDate}</span>
+        </header>
 
-        <input
-          className="form-input"
-          placeholder="Material name (Hook, Holder...)"
-          value={newMaterial}
-          onChange={(e) => setNewMaterial(e.target.value)}
+        <div className="manager-dashboard__content manager-materials-page__content">
+          <section className="manager-dashboard__page-heading manager-materials-page__heading">
+            <div><h1>Materials</h1><p>{materials.length} {materials.length === 1 ? "material" : "materials"} · {lowStockVariants.length} low stock</p></div>
+            <div className="manager-materials-page__heading-actions">
+              <button type="button" className="manager-materials-page__secondary-button" onClick={openVariantForm} disabled={materials.length === 0}>Add Variant</button>
+              <button type="button" className="manager-materials-page__primary-button" onClick={openMaterialForm}><span aria-hidden="true">＋</span> Add Material</button>
+            </div>
+          </section>
+
+          {lowStockVariants.length > 0 && (
+            <section className="manager-materials-page__low-stock-alert" aria-label="Low stock alert">
+              <span className="manager-materials-page__alert-icon" aria-hidden="true">!</span>
+              <div><strong>Low Stock Alert</strong><p>{lowStockVariants.map((variant) => formatDisplayValue(variant.material_name || variant.name)).join(", ")} · reorder required</p></div>
+              <span className="manager-materials-page__alert-count">{lowStockVariants.length}</span>
+            </section>
+          )}
+
+          {loadError && <div className="manager-materials-page__alert" role="alert">{loadError}</div>}
+          {deleteError && <div className="manager-materials-page__alert manager-materials-page__alert--error" role="alert">{deleteError}</div>}
+
+          <section className="manager-materials-page__inventory" aria-label="Material inventory">
+            <div className="manager-materials-page__toolbar">
+              <label className="manager-materials-page__search">
+                <span aria-hidden="true">⌕</span>
+                <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search materials or variants…" aria-label="Search materials and variants" />
+              </label>
+              <span className="manager-materials-page__result-count">{inventoryResultCount} {inventoryResultCount === 1 ? "item" : "items"}</span>
+            </div>
+            <div className="manager-materials-page__table-wrap">
+              <table className="manager-materials-page__table">
+                <thead><tr>
+                  <th scope="col">Material</th><th scope="col">Variant</th><th scope="col">Stock</th><th scope="col">Min. stock</th><th scope="col">Status</th><th scope="col">Unit price</th><th scope="col">Actions</th>
+                </tr></thead>
+                <tbody>
+                  {!loading && filteredVariants.map((variant) => {
+                    const material = materialById.get(String(variant.material));
+                    return (
+                      <tr key={variant.id} className={variant.low_stock === true ? "is-low-stock" : ""}>
+                        <td data-label="Material"><strong>{formatDisplayValue(variant.material_name || material?.name, "Material")}</strong></td>
+                        <td data-label="Variant">{formatDisplayValue(variant.name)}</td>
+                        <td data-label="Stock">
+                          <div className="manager-materials-page__stock-edit">
+                            <input aria-label={`Stock for ${variant.name}`} type="number" value={variant.stock ?? ""} onChange={(event) => setVariants((current) => current.map((item) => item.id === variant.id ? { ...item, stock: event.target.value } : item))} />
+                            <span>{formatDisplayValue(variant.unit, "")}</span>
+                            <button type="button" className="manager-materials-page__save-button" onClick={() => saveStock(variant)} disabled={savingStockId === variant.id}>{savingStockId === variant.id ? "Saving…" : "Save"}</button>
+                          </div>
+                        </td>
+                        <td data-label="Min. stock">{material?.low_stock_limit ?? "—"}{variant.unit ? ` ${formatDisplayValue(variant.unit, "")}` : ""}</td>
+                        <td data-label="Status"><span className={`manager-materials-page__status${variant.low_stock === true ? " is-low" : ""}`}><i aria-hidden="true" />{variant.low_stock === true ? "Low stock" : "OK"}</span></td>
+                        <td data-label="Unit price">{formatPrice(variant.base_cost)}{variant.unit ? <small> / {formatDisplayValue(variant.unit, "")}</small> : null}</td>
+                        <td data-label="Actions"><button type="button" className="manager-materials-page__delete-button" onClick={() => deleteVariant(variant)}>Delete</button></td>
+                      </tr>
+                    );
+                  })}
+                  {!loading && materialsWithoutVariants.map((material) => (
+                    <tr key={`material-${material.id}`}>
+                      <td data-label="Material"><strong>{formatDisplayValue(material.name, "Material")}</strong></td>
+                      <td data-label="Variant">—</td>
+                      <td data-label="Stock">—</td>
+                      <td data-label="Min. stock">{material.low_stock_limit ?? "—"}</td>
+                      <td data-label="Status">—</td>
+                      <td data-label="Unit price">—</td>
+                      <td data-label="Actions">—</td>
+                    </tr>
+                  ))}
+                  {!loading && inventoryResultCount === 0 && <tr><td colSpan="7"><div className="manager-materials-page__empty"><strong>{variants.length || materials.length ? "No materials match your search." : "No materials have been added yet."}</strong><span>{variants.length || materials.length ? "Try another material or variant name." : "Add a material to begin tracking inventory."}</span></div></td></tr>}
+                  {loading && <tr><td colSpan="7"><div className="manager-materials-page__empty">Loading materials…</div></td></tr>}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      {modal && (
+        <MaterialModal
+          kind={modal}
+          materials={materials}
+          materialName={newMaterial}
+          lowStockLimit={lowStockLimit}
+          variantForm={variantForm}
+          saving={saving}
+          error={formError}
+          onMaterialNameChange={setNewMaterial}
+          onLowStockLimitChange={setLowStockLimit}
+          onVariantChange={(event) => setVariantForm((current) => ({ ...current, [event.target.name]: event.target.value }))}
+          onClose={closeModal}
+          onSubmit={modal === "material" ? addMaterial : addVariant}
         />
+      )}
+    </div>
+  );
+}
 
-        <input
-          className="form-input"
-          type="number"
-          placeholder="Low stock alert limit"
-          value={lowStockLimit}
-          onChange={(e) => setLowStockLimit(e.target.value)}
-        />
-
-        <button className="action-btn" onClick={addMaterial}>
-          Add Material
-        </button>
-      </div>
-
-      {/* ================= ADD VARIANT ================= */}
-      <div className="form-card">
-        <h3>Add Material Variant</h3>
-
-        <select
-          className="form-input"
-          value={variantForm.material}
-          onChange={(e) =>
-            setVariantForm({ ...variantForm, material: e.target.value })
-          }
-        >
-          <option value="">Select Material</option>
-          {materials.map((m) => (
-            <option key={m.id} value={m.id}>
-              {m.name}
-            </option>
-          ))}
-        </select>
-
-        <input
-          className="form-input"
-          placeholder="Variant name (Fish Hook)"
-          value={variantForm.name}
-          onChange={(e) =>
-            setVariantForm({ ...variantForm, name: e.target.value })
-          }
-        />
-
-        <input
-          className="form-input"
-          type="number"
-          placeholder="Stock"
-          value={variantForm.stock}
-          onChange={(e) =>
-            setVariantForm({ ...variantForm, stock: e.target.value })
-          }
-        />
-
-        <input
-          className="form-input"
-          placeholder="Unit (pcs, meter)"
-          value={variantForm.unit}
-          onChange={(e) =>
-            setVariantForm({ ...variantForm, unit: e.target.value })
-          }
-        />
-         {/* ⭐ PRICE PER UNIT */}
-        <input
-          className="form-input"
-          type="number"
-          placeholder="Price per unit (₹)"
-          value={variantForm.base_cost}
-          onChange={e =>
-            setVariantForm({ ...variantForm, base_cost: e.target.value })
-          }
-        />
-        <button className="action-btn" onClick={addVariant}>
-          Add Variant
-        </button>
-      </div>
-
-      {/* ================= STOCK TABLE ================= */}
-      <div className="form-card">
-        <h3>Current Stock</h3>
-            {deleteError && (
-              <div
-                style={{
-                  background: "#fee2e2",
-                  color: "#991b1b",
-                  padding: "10px",
-                  marginBottom: "10px",
-                  borderRadius: "6px",
-                  fontWeight: "600"
-                }}
-              >
-               <div className="warning-box">
-                  ⚠ {deleteError}
-               </div>
-
-              </div>
-            )}
-
-        <table className="manager-table">
-          <thead>
-            <tr>
-              <th>Material</th>
-              <th>Variant</th>
-              <th>Price per unit</th>
-              <th>Stock</th>
-              <th>Status</th>
-              <th>Delete</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {variants.map((v) => (
-
-              <tr
-                key={v.id}
-
-                style={{
-                  background: v.low_stock ? "#fee2e2" : "white",
-                }}
-              >
-                <td>{v.material_name}</td>
-                <td>{v.name}</td>
-                <td>₹ {v.base_cost}</td>
-
-                <td>
-                  <div className="stock-actions">
-                    <input
-                      type="number"
-                      className="stock-input"
-                      value={v.stock}
-                      onChange={(e) => {
-                        const updated = variants.map((item) =>
-                          item.id === v.id
-                            ? { ...item, stock: e.target.value }
-                            : item
-                        );
-                        setVariants(updated);
-                      }}
-                    />
-
-                    <button
-                      className="action-btn"
-                      onClick={() => {
-                        api
-                          .put(`manager/raw-material-variants/${v.id}/`, v)
-                          .then(loadData);
-                      }}
-                    >
-                      Save
-                    </button>
-                  </div>
-                </td>
-
-                <td>{v.low_stock ? "⚠ LOW STOCK" : "OK"}</td>
-
-                <td>
-                  <button
-                    className="delete-btn"
-                    onClick={() => {
-                      if (!window.confirm("Delete variant?")) return;
-                    api
-                      .delete(`manager/raw-material-variants/${v.id}/`)
-                      .then(() => {
-                        setDeleteError(""); // clear old warning
-                        loadData();
-                      })
-                      .catch(err => {
-                        const message =
-                          err.response?.data?.error ||
-                          "Cannot delete this material.";
-
-                        setDeleteError(message);
-                      });
-                    }}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+function MaterialModal({ kind, materials, materialName, lowStockLimit, variantForm, saving, error, onMaterialNameChange, onLowStockLimitChange, onVariantChange, onClose, onSubmit }) {
+  const isMaterial = kind === "material";
+  return (
+    <div className="manager-materials-page__overlay" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+      <section className="manager-materials-page__modal" role="dialog" aria-modal="true" aria-labelledby="material-modal-title">
+        <header className="manager-materials-page__modal-header">
+          <div><h2 id="material-modal-title">{isMaterial ? "Add Material" : "Add Material Variant"}</h2><p>{isMaterial ? "Create a material and its stock threshold." : "Add a stock variant to an existing material."}</p></div>
+          <button type="button" onClick={onClose} aria-label="Close dialog">×</button>
+        </header>
+        <form onSubmit={onSubmit}>
+          <div className="manager-materials-page__form-grid">
+            {isMaterial ? <>
+              <label className="manager-materials-page__field manager-materials-page__field--wide"><span>Material name <b>*</b></span><input value={materialName} onChange={(event) => onMaterialNameChange(event.target.value)} required /></label>
+              <label className="manager-materials-page__field"><span>Low stock alert limit</span><input type="number" value={lowStockLimit} onChange={(event) => onLowStockLimitChange(event.target.value)} /></label>
+            </> : <>
+              <label className="manager-materials-page__field manager-materials-page__field--wide"><span>Material <b>*</b></span><select name="material" value={variantForm.material} onChange={onVariantChange} required><option value="">Select material</option>{materials.map((material) => <option key={material.id} value={material.id}>{formatDisplayValue(material.name)}</option>)}</select></label>
+              <label className="manager-materials-page__field manager-materials-page__field--wide"><span>Variant name <b>*</b></span><input name="name" value={variantForm.name} onChange={onVariantChange} required /></label>
+              <label className="manager-materials-page__field"><span>Initial stock</span><input type="number" step="any" name="stock" value={variantForm.stock} onChange={onVariantChange} /></label>
+              <label className="manager-materials-page__field"><span>Unit</span><input name="unit" value={variantForm.unit} onChange={onVariantChange} /></label>
+              <label className="manager-materials-page__field"><span>Price per unit (₹)</span><input type="number" step="0.01" name="base_cost" value={variantForm.base_cost} onChange={onVariantChange} /></label>
+            </>}
+          </div>
+          {error && <p className="manager-materials-page__form-error" role="alert">{error}</p>}
+          <footer className="manager-materials-page__modal-actions"><button type="button" className="manager-materials-page__secondary-button" onClick={onClose}>Cancel</button><button type="submit" className="manager-materials-page__primary-button" disabled={saving}>{saving ? "Saving…" : isMaterial ? "Add Material" : "Add Variant"}</button></footer>
+        </form>
+      </section>
     </div>
   );
 }

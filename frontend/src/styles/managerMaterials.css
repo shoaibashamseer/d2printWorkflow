@@ -1,0 +1,136 @@
+.manager-materials-page {
+  --mm-ink: #0f172a;
+  --mm-muted: #64748b;
+  --mm-border: #e2e8f0;
+  --mm-blue: #2563eb;
+}
+
+.manager-materials-page__content { padding-top: 23px; }
+.manager-materials-page__heading { align-items: center; }
+.manager-materials-page__heading-actions { display: flex; align-items: center; gap: 8px; }
+
+.manager-materials-page__primary-button,
+.manager-materials-page__secondary-button,
+.manager-materials-page__save-button,
+.manager-materials-page__delete-button {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 650;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.manager-materials-page__primary-button { background: #2563eb; color: #fff; box-shadow: 0 1px 2px rgba(37, 99, 235, .18); }
+.manager-materials-page__primary-button:hover { background: #1d4ed8; }
+.manager-materials-page__primary-button:disabled { cursor: not-allowed; opacity: .55; }
+.manager-materials-page__secondary-button { border-color: #dbe3ee; background: #fff; color: #334155; }
+.manager-materials-page__secondary-button:hover { border-color: #bfdbfe; background: #f8fbff; color: #1d4ed8; }
+.manager-materials-page__save-button { min-height: 28px; padding: 0 9px; background: #eff6ff; color: #1d4ed8; }
+.manager-materials-page__save-button:hover { background: #dbeafe; }
+.manager-materials-page__save-button:disabled { cursor: wait; opacity: .65; }
+.manager-materials-page__delete-button { min-height: 28px; padding: 0 8px; border-color: #fee2e2; background: #fff; color: #b91c1c; }
+.manager-materials-page__delete-button:hover { background: #fef2f2; }
+
+.manager-materials-page__low-stock-alert {
+  min-height: 57px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 13px;
+  padding: 10px 13px;
+  border: 1px solid #fed7aa;
+  border-radius: 9px;
+  background: #fffaf3;
+}
+
+.manager-materials-page__alert-icon {
+  width: 27px;
+  height: 27px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 8px;
+  background: #ffedd5;
+  color: #c2410c;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.manager-materials-page__low-stock-alert > div { min-width: 0; flex: 1; }
+.manager-materials-page__low-stock-alert strong { color: #9a3412; font-size: 10px; }
+.manager-materials-page__low-stock-alert p { margin: 3px 0 0; overflow: hidden; color: #9a5a30; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.manager-materials-page__alert-count { min-width: 22px; height: 22px; display: grid; place-items: center; border-radius: 20px; background: #ffedd5; color: #9a3412; font-size: 9px; font-weight: 700; }
+
+.manager-materials-page__alert { margin-bottom: 12px; padding: 10px 12px; border: 1px solid #fecaca; border-radius: 7px; background: #fef2f2; color: #991b1b; font-size: 10px; }
+.manager-materials-page__alert--error { border-color: #fecaca; }
+
+.manager-materials-page__inventory { overflow: hidden; border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; box-shadow: 0 2px 7px rgba(15, 23, 42, .03); }
+.manager-materials-page__toolbar { min-height: 57px; display: flex; align-items: center; gap: 12px; padding: 10px 13px; border-bottom: 1px solid #eef2f7; }
+.manager-materials-page__search { width: min(100%, 340px); min-height: 33px; display: flex; align-items: center; gap: 8px; padding: 0 10px; border: 1px solid #e2e8f0; border-radius: 7px; background: #fff; color: #94a3b8; }
+.manager-materials-page__search > span { font-size: 17px; line-height: 1; }
+.manager-materials-page__search input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: #334155; font: inherit; font-size: 10px; }
+.manager-materials-page__search input::placeholder { color: #94a3b8; }
+.manager-materials-page__result-count { margin-left: auto; color: #94a3b8; font-size: 9px; }
+.manager-materials-page__table-wrap { overflow-x: auto; }
+.manager-materials-page__table { width: 100%; border-collapse: collapse; text-align: left; }
+.manager-materials-page__table th { height: 37px; padding: 0 12px; border-bottom: 1px solid #e8edf4; background: #f8fafc; color: #64748b; font-size: 8px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+.manager-materials-page__table td { min-height: 52px; padding: 9px 12px; border-bottom: 1px solid #f1f5f9; color: #475569; font-size: 10px; vertical-align: middle; }
+.manager-materials-page__table tbody tr:last-child td { border-bottom: 0; }
+.manager-materials-page__table tbody tr.is-low-stock { background: #fffaf6; }
+.manager-materials-page__table td > strong { color: #1e293b; font-size: 10px; font-weight: 650; }
+.manager-materials-page__table td small { color: #94a3b8; font-size: 9px; }
+
+.manager-materials-page__stock-edit { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+.manager-materials-page__stock-edit input { width: 68px; height: 28px; padding: 0 7px; border: 1px solid #dbe3ee; border-radius: 5px; color: #334155; font: inherit; font-size: 10px; }
+.manager-materials-page__stock-edit > span { color: #64748b; font-size: 9px; }
+.manager-materials-page__status { display: inline-flex; align-items: center; gap: 5px; padding: 4px 7px; border-radius: 20px; background: #ecfdf5; color: #15803d; font-size: 8px; font-weight: 700; white-space: nowrap; }
+.manager-materials-page__status i { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.manager-materials-page__status.is-low { background: #fff7ed; color: #c2410c; }
+
+.manager-materials-page__empty { min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; padding: 20px; color: #94a3b8; font-size: 10px; text-align: center; }
+.manager-materials-page__empty strong { color: #475569; font-size: 11px; }
+
+.manager-materials-page__overlay { position: fixed; z-index: 1000; inset: 0; display: grid; place-items: center; overflow: auto; padding: 20px; background: rgba(15, 23, 42, .48); }
+.manager-materials-page__modal { width: min(100%, 520px); max-height: min(90vh, 760px); overflow: auto; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; box-shadow: 0 24px 70px rgba(15, 23, 42, .22); }
+.manager-materials-page__modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; padding: 19px 20px 15px; border-bottom: 1px solid #eef2f7; }
+.manager-materials-page__modal-header h2 { margin: 0; color: #0f172a; font-size: 17px; font-weight: 700; letter-spacing: -.02em; }
+.manager-materials-page__modal-header p { margin: 5px 0 0; color: #64748b; font-size: 10px; }
+.manager-materials-page__modal-header > button { width: 28px; height: 28px; border: 0; border-radius: 6px; background: transparent; color: #64748b; cursor: pointer; font-size: 21px; line-height: 1; }
+.manager-materials-page__modal-header > button:hover { background: #f1f5f9; color: #0f172a; }
+.manager-materials-page__form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; padding: 18px 20px; }
+.manager-materials-page__field { min-width: 0; display: flex; flex-direction: column; gap: 6px; color: #334155; font-size: 10px; font-weight: 600; }
+.manager-materials-page__field--wide { grid-column: 1 / -1; }
+.manager-materials-page__field b { color: #dc2626; }
+.manager-materials-page__field input,.manager-materials-page__field select { width: 100%; min-height: 35px; padding: 7px 9px; border: 1px solid #dbe3ee; border-radius: 6px; outline: none; background: #fff; color: #334155; font: inherit; font-size: 10px; font-weight: 400; }
+.manager-materials-page__field input:focus,.manager-materials-page__field select:focus,.manager-materials-page__stock-edit input:focus { border-color: #93c5fd; box-shadow: 0 0 0 3px rgba(59, 130, 246, .12); }
+.manager-materials-page__form-error { margin: 0 20px 13px; color: #b91c1c; font-size: 10px; }
+.manager-materials-page__modal-actions { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px 17px; border-top: 1px solid #eef2f7; }
+
+.manager-materials-page a:focus-visible,
+.manager-materials-page button:focus-visible,
+.manager-materials-page input:focus-visible,
+.manager-materials-page select:focus-visible { outline: 3px solid rgba(59, 130, 246, .32); outline-offset: 2px; }
+
+@media (max-width: 1050px) {
+  .manager-materials-page__table { min-width: 820px; }
+}
+
+@media (max-width: 560px) {
+  .manager-materials-page__heading-actions { width: 100%; }
+  .manager-materials-page__heading-actions > button { flex: 1; }
+  .manager-materials-page__toolbar { align-items: stretch; flex-direction: column; }
+  .manager-materials-page__search { width: 100%; }
+  .manager-materials-page__result-count { margin-left: 0; }
+  .manager-materials-page__form-grid { grid-template-columns: minmax(0, 1fr); padding: 16px; }
+  .manager-materials-page__field--wide { grid-column: auto; }
+  .manager-materials-page__modal-header { padding: 17px 16px 13px; }
+  .manager-materials-page__modal-actions { padding: 12px 16px 15px; }
+}

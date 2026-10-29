@@ -14,6 +14,7 @@ import WorkerDashboard from "./pages/worker/WorkerDashboard";
 import BossDashboard from "./pages/BossDashboard";
 
 import TasksMonitor from "./pages/manager/TasksMonitor";
+import OrdersManager from "./pages/manager/OrdersManager";
 import ProductsManager from "./pages/manager/ProductsManager";
 import WorkflowsManager from "./pages/manager/WorkflowsManager";
 import WorkflowStepsManager from "./pages/manager/WorkflowStepsManager";
@@ -35,6 +36,8 @@ function App() {
     const role = localStorage.getItem("role");
 
     const userType = localStorage.getItem("user_type");
+    const normalizedRole = role?.trim().toLowerCase();
+    const normalizedUserType = userType?.trim().toLowerCase();
 
     const mustChange =
         localStorage.getItem("must_change_password") === "true";
@@ -89,9 +92,9 @@ function App() {
                             <Navigate to="/login" replace />
                         ) : mustChange ? (
                             <Navigate to="/change-password" replace />
-                        ) : role === "manager" ? (
+                        ) : normalizedRole === "manager" || normalizedUserType === "manager" ? (
                             <Navigate to="/manager" replace />
-                        ) : role === "boss" ? (
+                        ) : normalizedRole === "boss" || normalizedUserType === "boss" ? (
                             <Navigate to="/boss" replace />
                         ) : (
                             <Navigate to="/worker" replace />
@@ -108,6 +111,15 @@ function App() {
                     element={
                         <ProtectedRoute role={role} allow={["manager"]}>
                             <ManagerDashboard />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/manager/orders"
+                    element={
+                        <ProtectedRoute role={role} allow={["manager"]}>
+                            <OrdersManager />
                         </ProtectedRoute>
                     }
                 />
@@ -214,7 +226,7 @@ function App() {
                 <Route
                     path="/orders/new"
                     element={
-                        <ProtectedRoute role={role} allow={ALL_ROLES}>
+                        <ProtectedRoute role={role} allow={ALL_ROLES} allowAnyWorkerRole>
                             <PlaceOrder />
                         </ProtectedRoute>
                     }
@@ -279,6 +291,7 @@ function App() {
                                 "packing",
                                 "billing"
                             ]}
+                            allowAnyWorkerRole
                         >
                             <WorkerDashboard />
                         </ProtectedRoute>

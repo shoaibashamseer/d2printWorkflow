@@ -19,6 +19,15 @@ from core.views.manager.raw_material_views import RawMaterialViewSet
 from core.views.manager.stock_alert_views import LowStockAlertView
 from core.views.boss_reports import MonthlyReportView
 from core.views.worker_workorder_view import WorkerWorkOrderViewSet
+from core.views.worker_lifecycle_views import (
+    BillingCompletionView,
+    BillingItemListView,
+    DeliveryConfirmationView,
+    DeliveryItemListView,
+    DeliveryPhotoView,
+    HistoryItemListView,
+    PaymentReceivedView,
+)
 from core.views.boss_views import (
     DailyLedgerViewSet,
     WorkEstimateViewSet,
@@ -51,6 +60,13 @@ router.register(
 
 urlpatterns = [
     path("auth/login/", login_view),
+    path("worker/delivery-items/", DeliveryItemListView.as_view()),
+    path("worker/billing-items/", BillingItemListView.as_view()),
+    path("worker/history/", HistoryItemListView.as_view()),
+    path("worker/order-items/<int:order_item_id>/confirm-delivery/", DeliveryConfirmationView.as_view()),
+    path("worker/order-items/<int:order_item_id>/complete-billing/", BillingCompletionView.as_view()),
+    path("worker/order-items/<int:order_item_id>/payment-received/", PaymentReceivedView.as_view()),
+    path("worker/order-items/<int:order_item_id>/photo/", DeliveryPhotoView.as_view(), name="worker-item-lifecycle-photo"),
     path("manager/reports/tasks/", TaskReportView.as_view()),
     path("manager/staff/create/", StaffCreateView.as_view()),
     path("auth/change-password/", ChangePasswordView.as_view()),
