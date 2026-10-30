@@ -137,13 +137,6 @@ function ManagerDashboard() {
         </header>
 
         <div className="manager-dashboard__content">
-          <section className="manager-dashboard__page-heading">
-            <div>
-              <h1>Dashboard</h1>
-              <p>Production overview and team activity.</p>
-            </div>
-          </section>
-
           <section className="manager-dashboard__metrics" aria-label="Production task summary">
             <MetricCard label="Tasks in progress" value={loading.tasks ? "—" : taskCounts.inProgress} tone="blue" icon="◷" error={errors.tasks} />
             <MetricCard label="Ready tasks" value={loading.tasks ? "—" : taskCounts.ready} tone="amber" icon="◉" error={errors.tasks} />

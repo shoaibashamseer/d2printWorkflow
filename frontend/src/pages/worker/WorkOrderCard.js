@@ -91,12 +91,12 @@ export default function WorkOrderCard({
             {priorityLabels[order.priority] || "Scheduled"}
           </span>
         </span>
-        <span className="workorder-select__customer">
+        {order.company && (
+          <span className="workorder-select__company-name">{formatDisplayValue(order.company)}</span>
+        )}
+        <span className={`workorder-select__customer${order.company ? " is-secondary" : ""}`}>
           {formatDisplayValue(order.customer, "Customer")}
         </span>
-        {order.company && (
-          <span className="workorder-select__company">{formatDisplayValue(order.company)}</span>
-        )}
         <span className="workorder-select__products">
           {products.length === 0
             ? "No item details returned"
@@ -124,13 +124,13 @@ export default function WorkOrderCard({
       >
         <span className="workorder-card__main">
           <span className="workorder-card__title-row">
-            <strong>{formatDisplayValue(order.customer, "Customer")}</strong>
+            <strong>{formatDisplayValue(order.company || order.customer, "Customer")}</strong>
             <span className={`workorder-priority workorder-priority--${order.priority || "future"}`}>
               {priorityLabels[order.priority] || "Scheduled"}
             </span>
           </span>
           {order.company && (
-            <span className="workorder-card__company">{formatDisplayValue(order.company)}</span>
+            <span className="workorder-card__customer">{formatDisplayValue(order.customer, "Customer")}</span>
           )}
           <span className="workorder-card__products">
             {products.length === 0

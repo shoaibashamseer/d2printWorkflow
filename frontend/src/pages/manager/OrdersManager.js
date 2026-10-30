@@ -39,6 +39,8 @@ export default function OrdersManager() {
   const [loadError, setLoadError] = useState("");
   const [search, setSearch] = useState("");
   const [showPlaceOrder, setShowPlaceOrder] = useState(false);
+  const [deletingOrderId, setDeletingOrderId] = useState(null);
+  const [deleteError, setDeleteError] = useState(null);
   const currentDate = new Intl.DateTimeFormat(undefined, {
     weekday: "short",
     day: "2-digit",
@@ -92,6 +94,25 @@ export default function OrdersManager() {
     await loadOrders();
   };
 
+  const deleteOrder = async (order) => {
+    const orderNumber = getOrderNumber(order);
+    if (!window.confirm(`Delete ${orderNumber}? This action cannot be undone.`)) return;
+
+    setDeletingOrderId(order.order_id);
+    setDeleteError(null);
+    try {
+      await api.delete(`orders/${order.order_id}/`);
+      setOrders((current) => current.filter((entry) => entry.order_id !== order.order_id));
+    } catch (error) {
+      setDeleteError({
+        orderId: order.order_id,
+        message: error.response?.data?.detail || `Could not delete ${orderNumber}. Please try again.`,
+      });
+    } finally {
+      setDeletingOrderId(null);
+    }
+  };
+
   return (
     <div className="manager-dashboard manager-orders-page">
       <ManagerSidebar role={role} />
@@ -138,7 +159,7 @@ export default function OrdersManager() {
             ) : (
               <div className="manager-orders-page__table-scroll">
                 <table className="manager-orders-page__table">
-                  <thead><tr><th>ORDER</th><th>CUSTOMER</th><th>ITEMS</th><th>CURRENT WORK</th><th>DUE DATE</th><th>TOTAL</th></tr></thead>
+                  <thead><tr><th>ORDER</th><th>CUSTOMER</th><th>ITEMS</th><th>CURRENT WORK</th><th>DUE DATE</th><th>TOTAL</th><th>ACTIONS</th></tr></thead>
                   <tbody>
                     {filteredOrders.map((order) => {
                       const items = Array.isArray(order.products) ? order.products : [];
@@ -161,6 +182,18 @@ export default function OrdersManager() {
                           </td>
                           <td>{formatDate(order.delivery_date)}</td>
                           <td className="manager-orders-page__total">{order.grand_total == null ? "—" : `₹ ${Number(order.grand_total).toLocaleString("en-IN")}`}</td>
+                          <td className="manager-orders-page__action-cell">
+                            <button
+                              type="button"
+                              className="manager-orders-page__delete-button"
+                              onClick={() => deleteOrder(order)}
+                              disabled={deletingOrderId === order.order_id}
+                              aria-label={`Delete ${getOrderNumber(order)}`}
+                            >
+                              {deletingOrderId === order.order_id ? "Deleting…" : "Delete"}
+                            </button>
+                            {deleteError?.orderId === order.order_id && <small className="manager-orders-page__delete-error" role="alert">{deleteError.message}</small>}
+                          </td>
                         </tr>
                       );
                     })}

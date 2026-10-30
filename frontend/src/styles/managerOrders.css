@@ -70,7 +70,7 @@
 .manager-orders-page__search input { width: 100%; min-width: 0; border: 0; outline: none; color: #334155; font: inherit; font-size: 10px; }
 .manager-orders-page__search input::placeholder { color: #94a3b8; }
 .manager-orders-page__table-scroll { width: 100%; overflow-x: auto; }
-.manager-orders-page__table { width: 100%; min-width: 840px; border-collapse: collapse; text-align: left; }
+.manager-orders-page__table { width: 100%; min-width: 920px; border-collapse: collapse; text-align: left; }
 .manager-orders-page__table th {
   padding: 11px 12px;
   border-bottom: 1px solid #e8edf3;
@@ -105,6 +105,23 @@
 .manager-orders-page__status--completed { background: #ecfdf5; color: #047857 !important; }
 .manager-orders-page__muted { color: #94a3b8; }
 .manager-orders-page__total { color: #0f172a !important; font-weight: 650; white-space: nowrap; }
+.manager-orders-page__action-cell { min-width: 92px; white-space: nowrap; }
+.manager-orders-page__delete-button {
+  min-height: 29px;
+  padding: 0 9px;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  background: #fff;
+  color: #b91c1c;
+  cursor: pointer;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 650;
+}
+.manager-orders-page__delete-button:hover:not(:disabled) { background: #fef2f2; }
+.manager-orders-page__delete-button:focus-visible { outline: 3px solid rgba(239, 68, 68, .22); outline-offset: 2px; }
+.manager-orders-page__delete-button:disabled { cursor: wait; opacity: .65; }
+.manager-orders-page__delete-error { display: block; max-width: 180px; margin-top: 5px; color: #b91c1c; font-size: 8px; white-space: normal; }
 .manager-orders-page__state { min-height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 24px; color: var(--orders-muted); font-size: 11px; text-align: center; }
 .manager-orders-page__state strong { color: #334155; font-size: 12px; }
 .manager-orders-page__state--error { color: #b91c1c; }
@@ -141,7 +158,7 @@
 
 @media (max-width: 1023px) {
   .manager-orders-page__content { padding-right: 19px; padding-left: 19px; }
-  .manager-orders-page__table { min-width: 790px; }
+  .manager-orders-page__table { min-width: 860px; }
 }
 
 @media (max-width: 767px) {
@@ -150,7 +167,7 @@
   .manager-orders-page__primary-button { align-self: flex-start; min-height: 42px; }
   .manager-orders-page__toolbar { align-items: stretch; flex-direction: column; gap: 12px; padding: 13px; }
   .manager-orders-page__search { width: 100%; min-height: 42px; }
-  .manager-orders-page__table { min-width: 730px; }
+  .manager-orders-page__table { min-width: 800px; }
   .manager-orders-page__table th, .manager-orders-page__table td { padding: 10px 9px; }
   .manager-orders-page__overlay { align-items: flex-end; padding: 0; }
   .manager-orders-page__dialog { width: 100%; max-height: 96vh; border-radius: 14px 14px 0 0; }
@@ -159,6 +176,6 @@
 }
 
 @media (max-width: 420px) {
-  .manager-orders-page__table { min-width: 680px; }
+  .manager-orders-page__table { min-width: 760px; }
   .manager-orders-page__dialog-header h2 { font-size: 17px; }
 }
