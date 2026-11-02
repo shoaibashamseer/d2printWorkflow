@@ -13,3 +13,20 @@ work/
 # Frontend generated dependencies/build output
 frontend/node_modules/
 frontend/build/
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local databases
+db.local.sqlite3
+*.sqlite3
+
+# Local environment
+.env
+venv/
+.venv/
+
+# React dependencies and builds
+node_modules/
+build/
